@@ -1,16 +1,19 @@
 .SideMenu {
     position: absolute;
     left: 2em;
-    top: 20vh;
-    height: 60vh;
-    height: 36em;
-    border: 1px solid #38404E;
+    top: 10vh;
+    height: 80vh;
     border-radius : 5px;
-    backdrop-filter: blur(22.5px); 
     box-sizing : border-box;
-    transform: perspective(70vh) rotateY(5deg);
-    backdrop-filter: blur(22.5px);
+    /* From https://css.glass */
+background: rgba(53, 219, 255, 0.29);
+border-radius: 16px;
+box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+backdrop-filter: blur(4.5px);
+-webkit-backdrop-filter: blur(4.5px);
+border: 1px solid rgba(53, 219, 255, 0.39);
     user-select : none;
+    -webkit-user-select : none;
 }
 
 .LineDivision {
@@ -24,7 +27,7 @@
 .MenuImg {
     display: inline-block;
     width: 100%;
-    opacity: 0.3;
+    opacity: 0.5;
     user-select: none;
     text-align: center;
     cursor:pointer;
@@ -35,8 +38,9 @@
     display: flex;
     margin-left: auto;
     margin-right: auto;
-    margin-bottom: .5em;
-    margin-top: .5em;
+    margin-bottom: .1em;
+    margin-top: .1em;
+
 }
 
 .MenuImg:hover {
@@ -44,8 +48,8 @@
 }
 
 .MenuOption {
-    width: 3.5em;
-    margin: .25em;
+    width: 7em;
+    margin: .15em;
     margin-bottom: 1em;
 }
 
