@@ -207,7 +207,7 @@ export const UserMenu = () => {
                     icon="download"
                     size={14}
                     onClick={() => {
-                      download(model, `UpstreetAvatar_${type}`, "glb")
+                      download(model, `AtlasAvatar_${type}`, "glb")
                     }}
                   />
                   <CustomButton
@@ -216,7 +216,7 @@ export const UserMenu = () => {
                     icon="download"
                     size={14}
                     onClick={() => {
-                      download(model, `UpstreetAvatar_${type}`, "vrm")
+                      download(model, `AtlasAvatar_${type}`, "vrm")
                     }}
                   />
                 </div>
