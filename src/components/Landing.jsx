@@ -16,7 +16,7 @@ import { Canvas } from "@react-three/fiber"
 import { SceneContext } from "../context/SceneContext"
 import { ViewContext, ViewStates } from "../context/ViewContext"
 import { AnimationManager } from "../library/animationManager"
-
+import logo from "../../public/ui/Atlaslogo.png"
 import CustomButton from "./custom-button"
 import styles from "./Landing.module.css"
 
@@ -30,7 +30,7 @@ const Classes = {
   DROPHUNTER: {
     index: 0,
     model: dropHunter,
-    text: "Dropunter",
+    text: "Drophunter",
     animation: anim_drophunter,
   },
   NEUROHACKER: {
@@ -131,10 +131,7 @@ export default function Landing() {
         >
           <div className={styles.backdrop} />
           <div className={styles["box"]}>
-            <h2>Drop Hunter</h2>
-            <p>
-              +ATK +SPD // SUPERCHARGER
-            </p>
+            <h2>Betty </h2>
             <CustomButton
               theme="light"
               text="Select"
@@ -159,10 +156,7 @@ export default function Landing() {
         >
           <div className={styles.backdrop} />
           <div className={styles["box"]}>
-            <h2>Neuro Hacker</h2>
-            <p>
-              +ATK +SPR // STEALTH ATTACK
-            </p>
+            <h2>Billy</h2>
             <CustomButton
               theme="light"
               text="Select"
@@ -174,12 +168,14 @@ export default function Landing() {
             />
           </div>
         </div>
-
-        <div className={styles["subTitle-text"]}>
-          Pick a Class
+        <div className={styles["atlasmark"]}>
+       <img src={logo} className={styles["logo"]} />
+        </div>
+         <div className={styles["subTitle-text"]}>
+          Pick a Character
           <div className={styles["subTitle-desc"]}>
             {" "}
-            You will be able to customize in a moment.
+            Create your own custom 3d avatar.
           </div>
         </div>
         <Canvas
@@ -201,9 +197,9 @@ export default function Landing() {
             <Glitch
               delay={[1.5, 6.0]} // min and max glitch delay
               duration={[0.08, 0.3]} // min and max glitch duration
-              strength={[0.1, 0.3]} // min and max glitch strength
-              mode={GlitchMode.SPORADIC} // glitch mode
-              active // turn on/off the effect (switches between "mode" prop and GlitchMode.DISABLED)
+              strength={[0.01, 0.01]} // min and max glitch strength
+              mode={GlitchMode.DISABLED} // glitch mode
+              active={false} // turn on/off the effect (switches between "mode" prop and GlitchMode.DISABLED)
               ratio={0.3} // Threshold for strong glitches, 0 - no weak glitches, 1 - no strong glitches.
             />
           </EffectComposer>

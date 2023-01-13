@@ -1,5 +1,5 @@
 import React from "react"
-import webaMark from "../../public/ui/loading/webaMark.svg"
+import atlasMark from "../../public/ui/loading/atlasLogo.png"
 
 import { ViewContext } from "../context/ViewContext";
 
@@ -22,7 +22,7 @@ export default function LoadingOverlayCircularStatic({
           </div>
         </div>
       <div className={styles["logo-container"]}>
-          <img className={styles["webamark"]} src={webaMark} />
+          <img className={styles["atlasmark"]} src={atlasMark} />
         <div className={styles["logo-gradient"]}></div>
       </div>
     </div>
