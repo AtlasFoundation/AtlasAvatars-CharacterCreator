@@ -1,8 +1,8 @@
 .SelectorContainerPos {
   position: absolute;
-  top: 20vh;
+  top: 10vh;
   right: 2em;
-  height: 60vh;
+  height: 80vh;
   overflow-y: scroll;
   overflow-x: none;
   border: 1px solid #38404E;
@@ -58,7 +58,7 @@
 }
 
 .trait-icon {
-    height: 4em;
+    height: 10em;
     margin: auto;
     user-select: none;
     position: relative;
