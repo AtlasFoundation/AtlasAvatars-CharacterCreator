@@ -1,7 +1,7 @@
 
 @font-face {
-    font-family: 'Proxima';
-    src: url('./font/Proxima/Proxima.otf')  format("opentype");
+    font-family: 'Poppins', sans-serif;
+    src: url('https://fonts.googleapis.com/css2?family=Poppins:wght@600&display=swap')  format("truetype");
   }
  
 @keyframes fadeIn { 
@@ -63,7 +63,7 @@
     animation: fadeIn 1s ease-in both;
 }
 
-.webaverse-text {
+.logo {
     width: calc(400vh * 0.118);
     height: calc(148.83vh * 0.118);
     display: inline-block;
@@ -72,7 +72,7 @@
 
 .studio {
     color : #61E5F9;
-    font-family : 'Proxima';
+    font-family : 'Poppins';
     font-style : normal;
     font-weight : 800;
     font-size : calc(30vh * 0.118);
@@ -83,7 +83,7 @@
 
 .subTitle {
     color : rgb(255, 255, 255);
-    font-family : Proxima;
+    font-family : Poppins;
     font-style : normal;
     font-weight : 400;
     font-size : calc(30vh * 0.118);
@@ -140,11 +140,11 @@
     position: absolute;
     padding: 8px 12px 24px 12px;
     text-align: center;
-    max-width: 440px;
+    max-width: 200px;
 }
 
 .selection-box * {
-    font-family: 'Proxima' !important;
+    font-family: 'Poppins' !important;
 }
 
 .selection-box.right {
@@ -198,20 +198,25 @@
 }
 
 .selection-box h2 {
+    align-items: center;
     text-transform: uppercase;
-    color: #FCC000;
+    color: #00bfff;
     margin-bottom: 0px;
 }
 
 .selection-box p {
+    align-items: center;
+    position: relative;
+    left: 50%;
     color: #FFFFFF;
     line-height: 20px;
 }
 
 .selection-box .box button {
-    left: 50%;
-    bottom: -52px;
-    position: absolute;
+    align-items: center;
+    background-color: #00bfff;
+    border-radius: 3px;
+    position: relative;
     -ms-transform: translateX(-50%);
     -webkit-transform: translateX(-50%);
     transform: translateX(-50%);
