@@ -1,19 +1,22 @@
 .SideMenu {
-    position: absolute;
-    left: 2em;
-    top: 10vh;
+    position: absolute; 
+    display: flex;
+    flex-direction: column;
+    left: 2em;  
+    top: 7em;
+    bottom: auto;
     height: 80vh;
     border-radius : 5px;
     box-sizing : border-box;
     /* From https://css.glass */
-background: rgba(53, 219, 255, 0.29);
-border-radius: 16px;
-box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-backdrop-filter: blur(4.5px);
--webkit-backdrop-filter: blur(4.5px);
-border: 1px solid rgba(53, 219, 255, 0.39);
-    user-select : none;
+    background: rgba(53, 219, 255, 0.29);
+    border-radius: 16px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    -webkit-backdrop-filter: blur(4.5px);
+    backdrop-filter: blur(4.5px);
+    border: 1px solid rgba(53, 219, 255, 0.39);
     -webkit-user-select : none;
+    user-select: none;
 }
 
 .LineDivision {
@@ -25,32 +28,26 @@ border: 1px solid rgba(53, 219, 255, 0.39);
 }
 
 .MenuImg {
-    display: inline-block;
-    width: 100%;
-    opacity: 0.5;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    opacity: 0.8;
+    -webkit-user-select : none;
     user-select: none;
     text-align: center;
     cursor:pointer;
     border-right: '';
-
     margin:auto;
     src: '';
-    display: flex;
-    margin-left: auto;
-    margin-right: auto;
-    margin-bottom: .1em;
-    margin-top: .1em;
-
 }
 
 .MenuImg:hover {
     opacity: 1;
+    background: rgba(53, 219, 255, 0.29);
 }
 
 .MenuOption {
-    width: 7em;
-    margin: .15em;
-    margin-bottom: 1em;
+    margin: .1em;
 }
 
 .MenuOptionSelected {
@@ -60,28 +57,28 @@ border: 1px solid rgba(53, 219, 255, 0.39);
 
 .MenuImgActive {
     opacity: 1;
-    display: inline-block;
-    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     user-select: none;
+    -webkit-user-select : none;
     text-align: center;
     cursor:pointer;
     border-right: '';
-
     margin:auto;
     src: '';
-    display: flex;
     margin-left: auto;
     margin-right: auto;
-    margin-bottom: .25em;
-    margin-top: .25em;
+    margin-bottom: .1em;
+    background-color: aqua;
 }
 
 .ShuffleOption {
     border-right: '';
     opacity: 1;
-    height: 2.5em;
-    width: 2.5em;
-    padding: .5em;
+    height: 5em;
+    width: 5em;
+    padding: .1em;
     display: flex;
     margin-left: auto;
     margin-right: auto;

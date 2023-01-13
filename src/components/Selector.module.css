@@ -5,10 +5,14 @@
   height: 80vh;
   overflow-y: scroll;
   overflow-x: none;
-  border: 1px solid #38404E;
-  border-radius : 5px;
-  backdrop-filter: blur(22.5px);
-  transform: perspective(70vh) rotateY(-5deg);
+  background: rgba(53, 219, 255, 0.29);
+  border-radius: 16px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(4.5px);
+  -webkit-backdrop-filter: blur(4.5px);
+  border: 1px solid rgba(53, 219, 255, 0.39);
+  user-select : none;
+  -webkit-user-select : none;
 }
 
 .selector-container {
