@@ -125,6 +125,7 @@ export default function Selector({templateInfo, animationManager, manifest, blin
   useEffect(() => {
     if (selectedOptions.length > 0){
       loadOptions(selectedOptions).then((loadedData)=>{
+        console.log(loadedData)
         let newAvatar = {};
         loadedData.map((data)=>{
           newAvatar = {...newAvatar, ...itemAssign(data)}
@@ -220,6 +221,8 @@ export default function Selector({templateInfo, animationManager, manifest, blin
 
       const ind = options[0].indexTemplate
       const baseDir = manifest[ind].traitsDirectory// (maybe set in loading manager)
+
+      console.log(baseDir)
       
       // load necesary assets for the options
       options.map((option, index)=>{
@@ -255,7 +258,8 @@ export default function Selector({templateInfo, animationManager, manifest, blin
           trait:option?.trait,
           models:loadedModels,          
           textures:loadedTextures, 
-          colors:loadedColors      
+          colors:loadedColors,
+          template:ind
         }
       })
     });
@@ -339,12 +343,14 @@ export default function Selector({templateInfo, animationManager, manifest, blin
 
   // once loaded, assign
   const itemAssign = (itemData) => {
-    console.log(templateIndex)
+    console.log(itemData)
     const item = itemData.item;
     const traitData = itemData.trait;
     const models = itemData.models;
     const textures = itemData.textures;
     const colors = itemData.colors;
+    const template = itemData.template
+    console.log(template)
     // null section (when user selects to remove an option)
     if ( item == null) {
       // if avatar exists and trait exsits, remove it
@@ -372,11 +378,11 @@ export default function Selector({templateInfo, animationManager, manifest, blin
       // basic vrm setup (only if model is vrm)
       vrm = m.userData.vrm;
       
-      if (getAsArray(manifest[templateIndex].lipSyncTraits).indexOf(traitData.trait) !== -1)
+      if (getAsArray(manifest[template].lipSyncTraits).indexOf(traitData.trait) !== -1)
         setLipSync(new LipSync(vrm));
       renameVRMBones(vrm)
 
-      if (getAsArray(manifest[templateIndex].blinkerTraits).indexOf(traitData.trait) !== -1){
+      if (getAsArray(manifest[template].blinkerTraits).indexOf(traitData.trait) !== -1){
         blinkManager.addBlinker(vrm)
         console.log(traitData.trait)
       }
@@ -433,11 +439,11 @@ export default function Selector({templateInfo, animationManager, manifest, blin
         cullingLayer: 
           item.cullingLayer != null ? item.cullingLayer: 
           traitData.cullingLayer != null ? traitData.cullingLayer: 
-          manifest[templateIndex].defaultCullingLayer != null?manifest[templateIndex].defaultCullingLayer: -1,
+          manifest[template].defaultCullingLayer != null?manifest[template].defaultCullingLayer: -1,
         cullingDistance: 
           item.cullingDistance != null ? item.cullingDistance: 
           traitData.cullingDistance != null ? traitData.cullingDistance:
-          manifest[templateIndex].defaultCullingDistance != null ? manifest[templateIndex].defaultCullingDistance: null,
+          manifest[template].defaultCullingDistance != null ? manifest[template].defaultCullingDistance: null,
         cullingMeshes
       })  
     })

@@ -56,9 +56,9 @@ export default function Editor({manifest, templateInfo, initialTraits, animation
   const getMultipleRandomTraits = (traitNames, indexTemplate) =>{
     
     const resultTraitOptions = [];
-    
+    console.log(indexTemplate)
     traitNames.map((traitName)=>{
-       const traitFound = manifest[templateIndex].traits.find(trait => trait.trait === traitName);
+       const traitFound = manifest[indexTemplate].traits.find(trait => trait.trait === traitName);
        if (traitFound)
        {
         const options = getTraitOptions(traitFound, indexTemplate);
@@ -66,12 +66,14 @@ export default function Editor({manifest, templateInfo, initialTraits, animation
           resultTraitOptions.push(options[Math.floor(Math.random()*options.length)])
        }
     })
+    console.log(resultTraitOptions)
     return resultTraitOptions
   }
 
   const getClassOptions = () =>{
     const classOptions = [];
     manifest.map((character, index)=>{
+      console.log(index)
       classOptions.push(getMultipleRandomTraits(character.randomTraits, index))
     })
     return classOptions;
@@ -82,30 +84,30 @@ export default function Editor({manifest, templateInfo, initialTraits, animation
     const traitOptions = [];
     trait.collection.map((item,index)=>{
 
-      const textureTraits = manifest[templateIndex].textureCollections.find(texture => 
+      const textureTraits = manifest[indexTemplate].textureCollections.find(texture => 
         texture.trait === item.textureCollection
       )
-      const colorTraits = manifest[templateIndex].colorCollections.find(color => 
+      const colorTraits = manifest[indexTemplate].colorCollections.find(color => 
         color.trait === item.colorCollection  
       )
 
       // if no there is no collection defined for textures and colors, just grab the base option
       if (textureTraits == null && colorTraits == null){
-        const key = trait.name + "_" + index;
+        const key = indexTemplate + "_" + trait.name + "_" + index;
         traitOptions.push(getOption(key, indexTemplate,trait,item,item.thumbnail))
       }
 
       // in case we find collections of subtraits, add them as menu items
       if (textureTraits?.collection.length > 0){
         textureTraits.collection.map((textureTrait,txtrIndex)=>{
-          const key = trait.name + "_" + index + "_txt" + txtrIndex;
+          const key = indexTemplate + "_" + trait.name + "_" + index + "_txt" + txtrIndex;
           const thumbnail = getThumbnail (item, textureTrait,txtrIndex)
           traitOptions.push(getOption(key, indexTemplate,trait,item,thumbnail,null,textureTrait))
         })
       }
       if (colorTraits?.collection.length > 0){
         colorTraits.collection.map((colorTrait,colIndex)=>{
-          const key = trait.name + "_" + index + "_col" + colIndex;
+          const key = indexTemplate + "_" + trait.name + "_" + index + "_col" + colIndex;
           const thumbnail = getThumbnail (item, colorTrait,colIndex)
           // icons in color should be colored to avoid creating an icon per model
           traitOptions.push(getOption(key, indexTemplate,trait,item,thumbnail,getHSL(colorTrait.value[0]), null, colorTrait))
@@ -199,7 +201,7 @@ export default function Editor({manifest, templateInfo, initialTraits, animation
                 selectOption(item)
               }} 
               key = {index}>
-              <img className={currentTraitName !== item.name ? styles['MenuImg'] : styles['MenuImgActive']} src={templateInfo.traitIconsDirectory + item.icon} />
+              <img className={currentTraitName !== item.name ? styles['MenuImg'] : styles['MenuImgActive']} src={manifest[templateIndex].traitIconsDirectory + item.icon} />
             </div>
           ))}
 
