@@ -262,6 +262,7 @@ export default function Selector({templateInfo, animationManager, manifest, blin
   }
 
   const filterRestrictedOptions = (options) =>{
+    const ind = options[0]?.indexTemplate
     let removeTraits = [];
     for (let i =0; i < options.length;i++){
       const option = options[i];
@@ -303,7 +304,7 @@ export default function Selector({templateInfo, animationManager, manifest, blin
         if (options[i].trait?.name === trait){
           options[i] = {
             item:null,
-            trait:manifest[templateIndex].traits.find((t) => t.name === trait)
+            trait:manifest[ind].traits.find((t) => t.name === trait)
           }
           removed = true;
           break;
@@ -313,7 +314,7 @@ export default function Selector({templateInfo, animationManager, manifest, blin
       if (!removed){
         options.push({
           item:null,
-          trait:manifest[templateIndex].traits.find((t) => t.name === trait)
+          trait:manifest[ind].traits.find((t) => t.name === trait)
         })
       }
     });
@@ -338,7 +339,7 @@ export default function Selector({templateInfo, animationManager, manifest, blin
 
   // once loaded, assign
   const itemAssign = (itemData) => {
-
+    console.log(templateIndex)
     const item = itemData.item;
     const traitData = itemData.trait;
     const models = itemData.models;
