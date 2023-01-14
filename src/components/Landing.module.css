@@ -47,7 +47,7 @@
     height: 100vh;
     width: 100vw;
     background-size: cover;
-    display: fixed;
+    display: flex;
     flex-direction: column;
     align-items: center;
     overflow: hidden;
@@ -101,7 +101,7 @@
     font-size : calc(30vh * 0.118);
     line-height : calc(49vh * 0.118);
     text-align : center;
-    top: 50%;
+    top: 80%;
     left: 50%;
     -ms-transform: translateX(-50%) translateY(-50%);
     -webkit-transform: translateX(-50%) translateY(-50%);
@@ -118,7 +118,8 @@
 }
 
 .imgs {
-    display : flex;
+    position: absolute;
+    width: 100vw;
     user-select : none;
     margin-top: 30px;
 }
@@ -128,7 +129,9 @@
     animation-duration: 0.5s;
     animation-timing-function: ease-in-out;
     animation-fill-mode: both;
-    position: relative;
+    max-width: 100vw;
+    margin: auto;
+    position: center center;
 }
 
 
@@ -145,18 +148,49 @@
 
 .selection-box * {
     font-family: 'Poppins' !important;
+    background: rgba(53, 219, 255, 0.29);
+    border-radius: 16px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    -webkit-backdrop-filter: blur(4.5px);
+    backdrop-filter: blur(4.5px);
+    border: 1px solid rgba(53, 219, 255, 0.39);
+    -webkit-user-select : none;
+    user-select: none;
 }
 
 .selection-box.right {
     right: 48px;
+    background: rgba(53, 219, 255, 0.29);
+    border-radius: 16px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    -webkit-backdrop-filter: blur(4.5px);
+    backdrop-filter: blur(4.5px);
+    border: 1px solid rgba(53, 219, 255, 0.39);
+    -webkit-user-select : none;
+    user-select: none;
 }
 
 .selection-box.left {
     left: 48px;
+    background: rgba(53, 219, 255, 0.29);
+    border-radius: 16px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    -webkit-backdrop-filter: blur(4.5px);
+    backdrop-filter: blur(4.5px);
+    border: 1px solid rgba(53, 219, 255, 0.39);
+    -webkit-user-select : none;
+    user-select: none;
 }
 
 .selection-box .backdrop {
-    background: #060b0f;
+    background: rgba(53, 219, 255, 0.29);
+    border-radius: 16px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    -webkit-backdrop-filter: blur(4.5px);
+    backdrop-filter: blur(4.5px);
+    border: 1px solid rgba(53, 219, 255, 0.39);
+    -webkit-user-select : none;
+    user-select: none;
     position: absolute;
     left: 0;
     top: 0;
@@ -174,9 +208,14 @@
     left: -20px;
     height: 100%;
     width: 40px;
-    transform: skewX(4deg);
-    background-color: #060b0f;
-    z-index: 0;
+    background: rgba(53, 219, 255, 0.29);
+    border-radius: 16px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    -webkit-backdrop-filter: blur(4.5px);
+    backdrop-filter: blur(4.5px);
+    border: 1px solid rgba(53, 219, 255, 0.39);
+    -webkit-user-select : none;
+    user-select: none;
 }
 
 .selection-box .backdrop::after {
@@ -187,37 +226,57 @@
     right: -20px;
     height: 100%;
     width: 40px;
-    transform: skewX(-4deg);
-    background-color: #060b0f;
-    z-index: 0;
+    background: rgba(53, 219, 255, 0.29);
+    border-radius: 10px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    -webkit-backdrop-filter: blur(4.5px);
+    backdrop-filter: blur(4.5px);
+    border: 1px solid rgba(53, 219, 255, 0.39);
+    -webkit-user-select : none;
+    user-select: none;
 }
 
 .selection-box .box {
     position: relative;
     z-index: 2;
+    background: rgba(53, 219, 255, 0.29);
+    border-radius: 16px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    -webkit-backdrop-filter: blur(4.5px);
+    backdrop-filter: blur(4.5px);
+    border: 1px solid rgba(53, 219, 255, 0.39);
+    -webkit-user-select : none;
+    user-select: none;
 }
 
 .selection-box h2 {
     align-items: center;
     text-transform: uppercase;
     color: #00bfff;
-    margin-bottom: 0px;
+    padding: auto;
+    font-size: 20px;
 }
 
 .selection-box p {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    justify-content: center;
     align-items: center;
-    position: relative;
-    left: 50%;
     color: #FFFFFF;
     line-height: 20px;
+    width: 100%;
+    padding: auto;
 }
 
 .selection-box .box button {
-    align-items: center;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: auto;
+    justify-content: center;
     background-color: #00bfff;
-    border-radius: 3px;
-    position: relative;
-    -ms-transform: translateX(-50%);
-    -webkit-transform: translateX(-50%);
-    transform: translateX(-50%);
+    border-radius: 1px;
+    width: 100%;
+    text-align: center;
 }
