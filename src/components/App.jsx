@@ -156,7 +156,7 @@ return (
         <ARButton />
         <UserMenu />
         {currentAppMode === AppMode.CHAT && <ChatComponent />}
-        {currentAppMode === AppMode.APPEARANCE && <Editor animationManager={animationManager} initialTraits={initialTraits} templateInfo={templateInfo} blinkManager={blinkManager}/>}
+        {currentAppMode === AppMode.APPEARANCE && <Editor animationManager={animationManager} initialTraits={initialTraits} manifest={manifest} templateInfo={templateInfo} blinkManager={blinkManager}/>}
           </Fragment>
       }
     </Fragment>

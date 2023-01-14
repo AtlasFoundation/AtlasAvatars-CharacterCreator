@@ -25,7 +25,7 @@ THREE.BufferGeometry.prototype.computeBoundsTree = computeBoundsTree;
 THREE.BufferGeometry.prototype.disposeBoundsTree = disposeBoundsTree;
 THREE.Mesh.prototype.raycast = acceleratedRaycast;
 
-export default function Selector({templateInfo, animationManager, blinkManager}) {
+export default function Selector({templateInfo, animationManager, manifest, blinkManager}) {
   const {
     avatar,
     setAvatar,
@@ -38,7 +38,9 @@ export default function Selector({templateInfo, animationManager, blinkManager})
     setTraitsSpines,
     setTraitsLeftEye,
     setTraitsRightEye,
-    setLipSync
+    setLipSync,
+    templateIndex,
+    setTemplateIndex
   } = useContext(SceneContext)
   const { isMute } = useContext(AudioContext)
   const {setLoading} = useContext(ViewContext)
@@ -46,9 +48,9 @@ export default function Selector({templateInfo, animationManager, blinkManager})
   const [selectValue, setSelectValue] = useState("0")
   const [loadPercentage, setLoadPercentage] = useState(1)
 
-  const getRestrictions = () => {
+  const getRestrictions = (ind) => {
     
-    const traitRestrictions = templateInfo.traitRestrictions
+    const traitRestrictions = manifest[ind].traitRestrictions
     const typeRestrictions = {};
 
     for (const prop in traitRestrictions){
@@ -81,16 +83,16 @@ export default function Selector({templateInfo, animationManager, blinkManager})
     }
 
     // now merge defined type to type restrictions
-    for (const prop in templateInfo.typeRestrictions){
+    for (const prop in manifest[ind].typeRestrictions){
       // check if it already exsits
       if (typeRestrictions[prop] == null) typeRestrictions[prop] = {}
       if (typeRestrictions[prop].restrictedTypes == null) typeRestrictions[prop].restrictedTypes = []
       typeRestrictions[prop].restrictedTypes = [...new Set([
         ...typeRestrictions[prop].restrictedTypes ,
-        ...getAsArray(templateInfo.typeRestrictions[prop])])]  
+        ...getAsArray(manifest[ind].typeRestrictions[prop])])]  
 
       // now that we have setup the type restrictions, lets counter create for the other traits
-      getAsArray(templateInfo.typeRestrictions[prop]).map((typeName)=>{
+      getAsArray(manifest[ind].typeRestrictions[prop]).map((typeName)=>{
         // prop = boots
         // typeName = pants
         if (typeRestrictions[typeName] == null) typeRestrictions[typeName] = {}
@@ -107,7 +109,17 @@ export default function Selector({templateInfo, animationManager, blinkManager})
     }
   }
 
-  const restrictions = getRestrictions()
+  let restrictions = getRestrictions(templateIndex)
+
+  const setNewAvatar = (index) => {
+    setTemplateIndex(index)
+    restrictions = getRestrictions(index)
+    for (const prop in avatar){
+      if (avatar[prop].vrm)
+        disposeVRM(avatar[prop].vrm)
+    }
+    setAvatar({})
+  }
 
   // options are selected by random or start
   useEffect(() => {
@@ -124,15 +136,26 @@ export default function Selector({templateInfo, animationManager, blinkManager})
 
   },[selectedOptions])
   // user selects an option
+
   const selectTraitOption = (option) => {
     if (option == null){
       option = {
         item:null,
-        trait:templateInfo.traits.find((t) => t.name === currentTraitName)
+        indexTemplate: templateIndex,
+        trait:manifest[templateIndex].traits.find((t) => t.name === currentTraitName)
+      }
+    }
+    
+
+    // make sure we always have option as array
+    const options = getAsArray(option);
+    if (options.length > 0){
+      if (options[0].indexTemplate != templateIndex){
+        setNewAvatar(options[0].indexTemplate)
       }
     }
 
-    loadOptions([option]).then((loadedData)=>{
+    loadOptions(options).then((loadedData)=>{
       let newAvatar = {};
       
       loadedData.map((data)=>{
@@ -195,7 +218,8 @@ export default function Selector({templateInfo, animationManager, blinkManager})
         setLoadPercentage(Math.round(loaded/total * 100 ))
       }
 
-      const baseDir = templateInfo.traitsDirectory// (maybe set in loading manager)
+      const ind = options[0].indexTemplate
+      const baseDir = manifest[ind].traitsDirectory// (maybe set in loading manager)
       
       // load necesary assets for the options
       options.map((option, index)=>{
@@ -279,7 +303,7 @@ export default function Selector({templateInfo, animationManager, blinkManager})
         if (options[i].trait?.name === trait){
           options[i] = {
             item:null,
-            trait:templateInfo.traits.find((t) => t.name === trait)
+            trait:manifest[templateIndex].traits.find((t) => t.name === trait)
           }
           removed = true;
           break;
@@ -289,7 +313,7 @@ export default function Selector({templateInfo, animationManager, blinkManager})
       if (!removed){
         options.push({
           item:null,
-          trait:templateInfo.traits.find((t) => t.name === trait)
+          trait:manifest[templateIndex].traits.find((t) => t.name === trait)
         })
       }
     });
@@ -347,12 +371,14 @@ export default function Selector({templateInfo, animationManager, blinkManager})
       // basic vrm setup (only if model is vrm)
       vrm = m.userData.vrm;
       
-      if (getAsArray(templateInfo.lipSyncTraits).indexOf(traitData.trait) !== -1)
+      if (getAsArray(manifest[templateIndex].lipSyncTraits).indexOf(traitData.trait) !== -1)
         setLipSync(new LipSync(vrm));
       renameVRMBones(vrm)
 
-      if (getAsArray(templateInfo.blinkerTraits).indexOf(traitData.trait) !== -1)
+      if (getAsArray(manifest[templateIndex].blinkerTraits).indexOf(traitData.trait) !== -1){
         blinkManager.addBlinker(vrm)
+        console.log(traitData.trait)
+      }
 
       // animation setup section
       // play animations on this vrm  TODO, letscreate a single animation manager per traitInfo, as model may change since it is now a trait option
@@ -406,11 +432,11 @@ export default function Selector({templateInfo, animationManager, blinkManager})
         cullingLayer: 
           item.cullingLayer != null ? item.cullingLayer: 
           traitData.cullingLayer != null ? traitData.cullingLayer: 
-          templateInfo.defaultCullingLayer != null?templateInfo.defaultCullingLayer: -1,
+          manifest[templateIndex].defaultCullingLayer != null?manifest[templateIndex].defaultCullingLayer: -1,
         cullingDistance: 
           item.cullingDistance != null ? item.cullingDistance: 
           traitData.cullingDistance != null ? traitData.cullingDistance:
-          templateInfo.defaultCullingDistance != null ? templateInfo.defaultCullingDistance: null,
+          manifest[templateIndex].defaultCullingDistance != null ? manifest[templateIndex].defaultCullingDistance: null,
         cullingMeshes
       })  
     })
@@ -522,7 +548,7 @@ export default function Selector({templateInfo, animationManager, blinkManager})
                 //   `filter: brightness(${option.iconHSL.l}) 
                 //   saturate(${option.iconHSL.s * 100}%) 
                 //   hue(${option.iconHSL.s * 360}deg);`:""}
-                src={`${templateInfo.thumbnailsDirectory}${option.icon}`}
+                src={`${manifest[templateIndex].thumbnailsDirectory}${option.icon}`}
               />
               <img
                 src={tick}

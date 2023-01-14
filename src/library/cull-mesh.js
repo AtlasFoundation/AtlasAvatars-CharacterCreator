@@ -13,6 +13,8 @@ const distanceAfter = 0.03;
 let mainScene;
 
 export const CullHiddenFaces = async(meshes) => {
+    if (meshes.length === 0)
+        return
     // make a 2 dimensional array that will hold the layers
     const culls = [];
 

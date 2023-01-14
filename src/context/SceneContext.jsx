@@ -25,6 +25,7 @@ export const SceneProvider = (props) => {
   const [camera, setCamera] = useState(null)
 
   const [selectedOptions, setSelectedOptions] = useState([])
+  const [templateIndex, setTemplateIndex] = useState(0)
 
   const [colorStatus, setColorStatus] = useState("")
   const [traitsNecks, setTraitsNecks] = useState([])
@@ -63,6 +64,9 @@ export const SceneProvider = (props) => {
         setSelectedOptions,
         selectedOptions,
         model,
+        setTemplateIndex,
+        templateIndex,
+        
         setModel,
         animationManager,
         setAnimationManager,
