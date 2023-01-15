@@ -1,12 +1,14 @@
+![image](https://user-images.githubusercontent.com/64185677/212542418-c6826bc1-76b5-40e2-816b-d052dcd22ad8.png)
 # Atlas Avatars Character Creator
 
 Welcome to our 3D Avatar Creation Tool and NFT Minting Platform! This tool allows users to create custom 3D avatars and mint them as non-fungible tokens (NFTs) on multiple blockchain networks.
-![image](https://user-images.githubusercontent.com/64185677/212542253-28ca8a87-ee71-4215-9e4d-b22d285c830c.png)
 
 ### Quick Start (library)
 ```bash
 npm install avatarcreator
 ```
+
+![image](https://user-images.githubusercontent.com/64185677/212542253-28ca8a87-ee71-4215-9e4d-b22d285c830c.png)
 ## 3D Avatar Creation Tool and NFT Minting Platform
 
 Our platform is designed to maximize interest in your avatars by incorporating cutting-edge technology and utilizing relevant keywords that will make your avatars more discoverable on thharacter Creator
@@ -61,5 +63,3 @@ yarn run dev
 ```
 ##### Known Issues
 Does not support multimaterials for download.
-
-![Altas-Foundation-logo-transparent](https://user-images.githubusercontent.com/64185677/212541847-a06612bc-c3d4-4cb8-8986-1d095858e6d3.png)
