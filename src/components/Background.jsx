@@ -1,6 +1,6 @@
 import React from "react"
 
-import logo from "../../public/ui/weba.png"
+import logo from "../../public/ui/Atlaslogo.png"
 import styles from "./Background.module.css"
 
 export default function Background() {
@@ -8,7 +8,7 @@ export default function Background() {
     <div className={styles["backgroundImg"]}>
       <div className={styles["backgroundBlur"]}></div>
       <div className={styles["Background"]}>
-        <div className={styles["webamark"]}>
+        <div className={styles["atlasmark"]}>
           <img src={logo} className={styles["logo"]} />
         </div>
       </div>

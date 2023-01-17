@@ -20,7 +20,6 @@ export default function ChatBox() {
         const handleKeyDown = (event) => {
             if (event.ctrlKey && event.key === 'c') {
                 setMessages([]);
-                // spacebar
             }
         }
         window.addEventListener('keydown', handleKeyDown);
@@ -30,18 +29,19 @@ export default function ChatBox() {
     }, [])
 
     const handleSubmit = async (event) => {
-        if(event.preventDefault) event.preventDefault();
+        event.preventDefault();
         // Get the value of the input element
         const input = event.target.elements.message;
         const value = input.value;
 
         // Send the message to the localhost endpoint
-        const client = "charactercreator_page";
+        const client = 1;
         const channelId = "three";
+        const entity = 11;
         const speaker = "moon";
         const agent = "Eliza";
         const channel = "homepage";
-        const spell_handler = "charactercreator";
+        const spell_handler = "eliza_0.1.0";
 
         // get the first 5 messages
         const newMessages = [...messages];
@@ -50,19 +50,15 @@ export default function ChatBox() {
         setMessages(newMessages);
 
         try {
-            const url = encodeURI(`http://localhost:8001/spells/${spell_handler}`)
-
-            const driveId = '1QnOliOAmerMUNuo2wXoH-YoainoSjZen'
-
+            const url = encodeURI(`https://localhost:8001/spells/${spell_handler}`)
             axios.post(`${url}`, {
-                Input: {
-                    input: value,
-                    speaker: speaker,
-                    agent: agent,
-                    client: client,
-                    channelId: channelId,
-                    channel: channel,
-                }
+                    Input: value,
+                    Speaker: speaker,
+                    Agent: agent,
+                    Client: client,
+                    ChannelID: channelId,
+                    Entity: entity,
+                    Channel: channel,
             }).then((response) => {
                 const data = response.data;
 
@@ -72,7 +68,7 @@ export default function ChatBox() {
 
                 const output = outputs[outputKey];
 
-
+                const driveId = '1QnOliOAmerMUNuo2wXoH-YoainoSjZen'
 
                 const ttsEndpoint = `https://voice.webaverse.com/tts?s=${output}&voice=${driveId}`
 
@@ -107,5 +103,5 @@ export default function ChatBox() {
                 <button className={styles["button"]} onSubmit={handleSubmit} type="submit">Send</button>
             </form>
         </div>
-        );
+    );
 }

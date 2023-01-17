@@ -6,10 +6,11 @@ import React, { useContext, useEffect, useState } from "react"
 import { GLTFExporter } from "three/examples/jsm/exporters/GLTFExporter"
 import { AccountContext } from "../context/AccountContext"
 import { SceneContext } from "../context/SceneContext"
+import { ViewContext, ViewStates } from "../context/ViewContext"
 import { combine } from "../library/merge-geometry"
-import { getAvatarData } from "../library/utils"
 import VRMExporter from "../library/VRMExporter"
 import CustomButton from "./custom-button"
+import { CHAINS } from "./Contract"
 
 import styles from "./UserMenu.module.css"
 
@@ -17,15 +18,19 @@ export const UserMenu = () => {
   const type = "_Gen1" // class type
 
   const [showDownloadOptions, setShowDownloadOptions] = useState(false)
-  const { ensName, setEnsName, connected, setConnected } =
+  const { ensName, setEnsName, connected, setConnected, setWalletAddress } =
     useContext(AccountContext)
-  const { activate, deactivate, account } = useWeb3React()
+  const { avatar } =
+    useContext(SceneContext)
+  const { activate, deactivate, account, chainId } = useWeb3React()
 
   const injected = new InjectedConnector({
     supportedChainIds: [137, 1, 3, 4, 5, 42, 97],
   })
 
-  const { skinColor, model, avatar } = useContext(SceneContext)
+  const { skinColor, model } = useContext(SceneContext)
+
+  const { currentView, setCurrentView } = useContext(ViewContext)
 
   const [mintStatus, setMintStatus] = useState("")
 
@@ -33,15 +38,16 @@ export const UserMenu = () => {
     if (account) {
       _setAddress(account)
       setConnected(true)
+      setWalletAddress(account)
     } else {
       setConnected(false)
+      setWalletAddress(false)
       setMintStatus("Please connect your wallet.")
     }
   }, [account])
 
   const _setAddress = async (address) => {
     const { name } = await getAccountDetails(address)
-    console.log("ens", name)
     setEnsName(name ? name.slice(0, 15) + "..." : "")
   }
 
@@ -59,6 +65,15 @@ export const UserMenu = () => {
       console.warn(err.stack)
       return {}
     }
+  }
+
+  const getChainName = () => {
+    const chainIDMap = Object.keys(CHAINS).reduce((acc, key) => {
+      acc[CHAINS[key].chainId] = key;
+      return acc;
+    }, {})
+    const chainName = chainIDMap[chainId];
+    return chainName;
   }
 
   const disconnectWallet = async () => {
@@ -114,8 +129,6 @@ export const UserMenu = () => {
       fileName && fileName !== "" ? fileName : "AvatarCreatorModel"
     }`
 
-    console.log('avatarToDownload', avatarToDownload)
-
     const avatarToCombine = avatarToDownload.clone()
 
     const exporter = format === "glb" ? new GLTFExporter() : new VRMExporter()
@@ -149,19 +162,21 @@ export const UserMenu = () => {
       )
     } else {
 
-      const vrmData = {...getVRMBaseData(avatar), ...getAvatarData(avatarModel, "UpstreetAvatar")}
+      const vrmData = getAvatarVRMData();
+      vrmData.materials = [avatarModel.userData.atlasMaterial]
+      console.log(vrmData)
+
       exporter.parse(vrmData, avatarModel, (vrm) => {
         saveArrayBuffer(vrm, `${downloadFileName}.vrm`)
       })
     }
   }
 
-  function getVRMBaseData(avatar){
+  function getAvatarVRMData(){
     // to do, merge data from all vrms, not to get only the first one
     for (const prop in avatar){
-      if (avatar[prop].vrm){
+      if (avatar[prop].vrm)
         return avatar[prop].vrm
-      }
     }
   }
 
@@ -174,6 +189,7 @@ export const UserMenu = () => {
       <div className={styles.leftCorner} />
       <div className={styles.rightCorner} />
       <ul>
+        {currentView.includes("CREATOR") && (
           <React.Fragment>
             <li>
               <CustomButton
@@ -191,7 +207,7 @@ export const UserMenu = () => {
                     icon="download"
                     size={14}
                     onClick={() => {
-                      download(model, `UpstreetAvatar_${type}`, "glb")
+                      download(model, `AtlasAvatar_${type}`, "glb")
                     }}
                   />
                   <CustomButton
@@ -200,7 +216,7 @@ export const UserMenu = () => {
                     icon="download"
                     size={14}
                     onClick={() => {
-                      download(model, `UpstreetAvatar_${type}`, "vrm")
+                      download(model, `AtlasAvatar_${type}`, "vrm")
                     }}
                   />
                 </div>
@@ -213,16 +229,17 @@ export const UserMenu = () => {
                 icon="mint"
                 size={32}
                 onClick={() => {
-                  // setCurrentView(ViewStates.MINT)
+                  setCurrentView(ViewStates.MINT)
                 }}
               />
             </li>
           </React.Fragment>
+        )}
         {connected ? (
           <React.Fragment>
             <li>
               <div className={styles.loggedInText}>
-                <div className={styles.chainName}>Mainnet</div>
+                <div className={styles.chainName}>{getChainName()}</div>
                 {connected ? (
                   <div className={styles.walletAddress}>
                     {ensName
@@ -251,7 +268,7 @@ export const UserMenu = () => {
               <div className={styles.loggedOutText}>
                 Not
                 <br />
-                Connected
+                Logged In
               </div>
               <CustomButton
                 type="login"

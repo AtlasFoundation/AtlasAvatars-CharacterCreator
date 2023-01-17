@@ -55,12 +55,12 @@
 }
 
 .iconButtonWrap:hover .buttonBackgroundColor {
-    fill: #FFC000 !important;
+    fill: #00bfff !important;
     stroke: #000000 !important;
 }
 
 .iconButtonWrap:hover .innerBackgroundColor {
-    fill: #FFC000 !important;
+    fill: #00a2ff !important;
 }
 
 .iconButtonWrap:hover .icon * {
@@ -68,7 +68,7 @@
 }
 
 .iconButtonWrap:active .buttonBackgroundColor {
-    fill: #fdc503 !important;
+    fill: #00bfff !important;
 }
 
 .iconButtonWrap:active .innerBackgroundColor {
@@ -76,7 +76,7 @@
 }
 
 .iconButtonWrap:active .icon * {
-    fill: #fdc503;
+    fill: #00bfff;
 }
 
 .iconButtonWrap.active .buttonBackgroundColor {
@@ -88,7 +88,7 @@
 }
 
 .iconButtonWrap.active .icon * {
-    fill: #fdc503;
+    fill: #00bfff;
 }
 
 .buttonWrap {
@@ -143,9 +143,9 @@
 }
 
 .buttonWrap:hover .innerWrap {
-    border: 1px solid #FFC000;
+    border: 1px solid #00bfff;
     font-family: "TTSC-Bold";
-    background: #FFC000;
+    background: #00bfff;
     color: #EFEFEF;
 }
 
@@ -154,12 +154,12 @@
 }
 
 .buttonWrap:active .innerWrap {
-    border: 1px solid #FFC000;
+    border: 1px solid #00bfff;
     font-family: "TTSC-Bold";
     background: #000000;
-    color: #FFC000;
+    color: #00bfff;
 }
 
 .buttonWrap:active .innerWrap * {
-    fill: #FFC000 !important;
+    fill: #00bfff !important;
 }

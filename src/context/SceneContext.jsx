@@ -1,56 +1,83 @@
 import React, { createContext, useEffect, useState } from "react"
 import * as THREE from "three"
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader"
+import { VRMLoaderPlugin } from "@pixiv/three-vrm"
 import { cullHiddenMeshes } from "../library/utils"
+import {
+  renameVRMBones,
+  createFaceNormals,
+  createBoneDirection,
+} from "../library/utils"
 
 export const SceneContext = createContext()
 
 export const SceneProvider = (props) => {
-  const initializeScene = () => {
-    const scene = new THREE.Scene()
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
-    scene.add(ambientLight);
+  const loadingManager = new THREE.LoadingManager()
 
-    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
-    scene.add(directionalLight);
+  const gltfLoader = new GLTFLoader(loadingManager)
+  gltfLoader.register((parser) => {
+    return new VRMLoaderPlugin(parser)
+  })
 
-    return scene;
+  async function loadModel(file, onProgress) {
+    return gltfLoader.loadAsync(file, onProgress).then((model) => {
+      return addModel(model);
+    })
   }
 
-  const [scene, setScene] = useState(initializeScene())
+  // separated to call it after load manager finishes
+  function addModel(model){
+    const vrm = model.userData.vrm
+    renameVRMBones(vrm)
 
+    vrm.scene?.traverse((child) => {
+      child.frustumCulled = false
+
+      if (child.isMesh) {
+        createFaceNormals(child.geometry)
+        if (child.isSkinnedMesh) createBoneDirection(child)
+      }
+    })
+    return vrm
+  }
+
+  const [template, setTemplate] = useState(null)
+  const [scene, setScene] = useState(new THREE.Scene())
   const [currentTraitName, setCurrentTraitName] = useState(null)
   const [currentOptions, setCurrentOptions] = useState([])
-  const [model, setModel] = useState(new THREE.Object3D())
+  const [model, setModel] = useState(null)
   const [animationManager, setAnimationManager] = useState(null)
   const [camera, setCamera] = useState(null)
 
   const [selectedOptions, setSelectedOptions] = useState([])
+  const [selectedRandomTraits, setSelectedRandomTraits] = React.useState([])
 
   const [colorStatus, setColorStatus] = useState("")
   const [traitsNecks, setTraitsNecks] = useState([])
   const [traitsSpines, setTraitsSpines] = useState([])
-  const [traitsLeftEye, setTraitsLeftEye] = useState([])
-  const [traitsRightEye, setTraitsRightEye] = useState([])
   const [skinColor, setSkinColor] = useState(new THREE.Color(1, 1, 1))
-  const [avatar, _setAvatar] = useState(null)
+  const [avatar, _setAvatar] = useState(null);
 
-  const [controls, setControls] = useState(null)
-
-  const [lipSync, setLipSync] = useState(null)
-
-  const [cameraDegrees, setCameraDegrees] = useState({x: 0, y: 0})
-
+  const [lipSync, setLipSync] = useState(null);
+  
   const setAvatar = (state) => {
+    //console.log(state)
+    //cullHiddenMeshes(avatar, scene, template)
     _setAvatar(state)
+    //console.log(avatar)
   }
-  useEffect(() => {
-    if (avatar) {
-      if (Object.keys(avatar).length > 0) {
-        cullHiddenMeshes(avatar)
-      }
+  useEffect(()=>{
+   
+    if (avatar){
+     if(Object.keys(avatar).length > 0){
+        console.log("WIP[PENDING] cull meshes")
+        const currentTemplateIndex = parseInt(currentTemplate.index)
+        cullHiddenMeshes(avatar, scene, template[currentTemplateIndex])
+     }
     }
-  }, [avatar])
+  },[avatar])
 
+  const [currentTemplate, setCurrentTemplate] = useState(null)
   return (
     <SceneContext.Provider
       value={{
@@ -62,8 +89,12 @@ export const SceneProvider = (props) => {
         setCurrentTraitName,
         currentOptions,
         setCurrentOptions,
+        loadModel,
         setSelectedOptions,
         selectedOptions,
+        setSelectedRandomTraits,
+        selectedRandomTraits,
+        addModel,
         model,
         setModel,
         animationManager,
@@ -76,19 +107,14 @@ export const SceneProvider = (props) => {
         setSkinColor,
         avatar,
         setAvatar,
+        currentTemplate,
+        setCurrentTemplate,
+        template,
+        setTemplate,
         traitsNecks,
         setTraitsNecks,
         traitsSpines,
-        setTraitsSpines,
-        controls,
-        setControls,
-        traitsLeftEye,
-        setTraitsLeftEye,
-        traitsRightEye,
-        setTraitsRightEye,
-        initializeScene,
-        cameraDegrees, 
-        setCameraDegrees,
+        setTraitsSpines
       }}
     >
       {props.children}

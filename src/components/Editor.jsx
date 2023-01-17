@@ -1,18 +1,17 @@
-import React, { Fragment, useEffect, useContext } from "react";
+import React, { useEffect, useContext } from "react";
 
 import * as THREE from "three"
 import gsap from 'gsap';
 import useSound from 'use-sound';
 import optionClick from "../../public/sound/option_click.wav";
-import shuffle from "../../public/ui/traits/shuffle.svg";
+import shuffle from "../../public/ui/traits/shuffle.png";
 import { AudioContext } from "../context/AudioContext";
 import { SceneContext } from "../context/SceneContext";
 
 import styles from './Editor.module.css';
-import Selector from "./Selector"
 
-export default function Editor({templateInfo, initialTraits, animationManager, blinkManager}) {
-  const {currentTraitName, setCurrentTraitName, setCurrentOptions, setSelectedOptions, controls} = useContext(SceneContext);
+export default function Editor({templateInfo, controls}) {
+  const {currentTraitName, setCurrentTraitName, setCurrentOptions, setSelectedOptions, setSelectedRandomTraits, selectedRandomTraits} = useContext(SceneContext);
 
   const {isMute} = useContext(AudioContext);
 
@@ -25,8 +24,10 @@ export default function Editor({templateInfo, initialTraits, animationManager, b
 
     // options are selected by random or start
   useEffect(() => {
-      setSelectedOptions (getMultipleRandomTraits(initialTraits))
-  },[initialTraits])
+    if (selectedRandomTraits.length > 0){
+      setSelectedOptions (getMultipleRandomTraits(selectedRandomTraits))
+    }
+  },[selectedRandomTraits])
 
   const selectOption = (option) => {
     !isMute && play();
@@ -52,7 +53,6 @@ export default function Editor({templateInfo, initialTraits, animationManager, b
   const getMultipleRandomTraits = (traitNames) =>{
     
     const resultTraitOptions = [];
-    
     traitNames.map((traitName)=>{
        const traitFound = templateInfo.traits.find(trait => trait.trait === traitName);
        if (traitFound)
@@ -136,7 +136,6 @@ export default function Editor({templateInfo, initialTraits, animationManager, b
 
 
   const moveCamera = (value) => {
-    if(!controls) return;
       gsap.to(controls.target,{
         y:value.height,
         duration: 1,
@@ -171,25 +170,21 @@ export default function Editor({templateInfo, initialTraits, animationManager, b
   }
 
   return(
-    <Fragment>
-    <div className={styles['SideMenu']}>
-          {templateInfo.traits && templateInfo.traits.map((item, index) => (
-            <div className={styles['MenuOption']}
-              onClick = {()=>{
-                selectOption(item)
-              }} 
-              key = {index}>
-              <img className={currentTraitName !== item.name ? styles['MenuImg'] : styles['MenuImgActive']} src={templateInfo.traitIconsDirectory + item.icon} />
-            </div>
-          ))}
+  <div className={styles['SideMenu']}>
+        {templateInfo.traits && templateInfo.traits.map((item, index) => (
+          <div className={styles['MenuOption']}
+            onClick = {()=>{
+              selectOption(item)
+            }} 
+            key = {index}>
+            <img className={currentTraitName !== item.name ? styles['MenuImg'] : styles['MenuImgActive']} src={templateInfo.traitIconsDirectory + item.icon} />
+          </div>
+        ))}
 
-          <div className={styles['LineDivision']}/>
-          <img className={styles['ShuffleOption']} onClick={() => {
-              !isMute && play();
-              setSelectedOptions (getMultipleRandomTraits(templateInfo.randomTraits))
-            }} src={shuffle} />
-    </div>
-    <Selector animationManager={animationManager} templateInfo={templateInfo} blinkManager = {blinkManager}/>
-  </Fragment>
-  );
+        <div className={styles['LineDivision']}/>
+        <img className={styles['ShuffleOption']} onClick={() => {
+            !isMute && play();
+            setSelectedOptions (getMultipleRandomTraits(templateInfo.randomTraits))
+          }} src={shuffle} />
+  </div>);
 }

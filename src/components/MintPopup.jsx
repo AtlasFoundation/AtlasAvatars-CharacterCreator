@@ -1,10 +1,12 @@
 import axios from "axios"
 import { BigNumber, ethers } from "ethers"
 import React, { Fragment, useContext, useState } from "react"
-import ethereumIcon from "../../public/ui/mint/ethereum.png"
 import mintPopupImage from "../../public/ui/mint/mintPopup.png"
+import polygonIcon from "../../public/ui/mint/polygon.png"
+import ethereumIcon from "../../public/ui/mint/ethereum.png"
 import { AccountContext } from "../context/AccountContext"
 import { SceneContext } from "../context/SceneContext"
+import { ViewContext, ViewStates } from "../context/ViewContext"
 import { getModelFromScene, getScreenShot } from "../library/utils"
 import { CharacterContract, EternalProxyContract, webaverseGenesisAddress } from "./Contract"
 import MintModal from "./MintModal"
@@ -16,11 +18,16 @@ const pinataSecretApiKey = import.meta.env.VITE_PINATA_API_SECRET
 
 const mintCost = 0.01
 
-export default function MintPopup({templateInfo}) {
-  const { avatar, skinColor, model } = useContext(SceneContext)
-  const { walletAddress } = useContext(AccountContext)
+export default function MintPopup() {
+  const { template, avatar, skinColor, model, currentTemplate } = useContext(SceneContext)
+  const { currentView, setCurrentView } = useContext(ViewContext)
+  const { walletAddress, connected } =
+    useContext(AccountContext)
 
   const [mintStatus, setMintStatus] = useState("")
+
+  const currentTemplateIndex = parseInt(currentTemplate.index === undefined ? currentTemplate.index : 1)
+  const templateInfo = template[currentTemplateIndex]
 
   async function saveFileToPinata(fileData, fileName) {
     if (!fileData) return console.warn("Error saving to pinata: No file data")
@@ -56,6 +63,7 @@ export default function MintPopup({templateInfo}) {
   const mintAsset = async (avatar) => {
     const pass = await checkOT(walletAddress);
     if(pass) {
+      setCurrentView(ViewStates.MINT_CONFIRM)
       setMintStatus("Uploading...")
       console.log('avatar in mintAsset', avatar)
 
@@ -64,7 +72,7 @@ export default function MintPopup({templateInfo}) {
         throw new Error("Unable to get screenshot")
       }
 
-      let imageName = "AvatarImage_" + Date.now() + ".png";
+      const imageName = "AvatarImage_" + Date.now() + ".png";
       const imageHash = await saveFileToPinata(
         screenshot,
         imageName
@@ -73,7 +81,7 @@ export default function MintPopup({templateInfo}) {
         setMintStatus("Couldn't save to pinata")
       })
       const glb = await getModelFromScene(avatar.scene.clone(), "glb", skinColor)
-      let glbName = "AvatarGlb_" + Date.now() + ".vrm";
+      const glbName = "AvatarGlb_" + Date.now() + ".glb";
       const glbHash = await saveFileToPinata(
         glb,
         glbName
@@ -82,8 +90,8 @@ export default function MintPopup({templateInfo}) {
       const metadata = {
         name: "Avatars",
         description: "Creator Studio Avatars.",
-        image: `ipfs://${imageHash.IpfsHash}`,
-        animation_url: `ipfs://${glbHash.IpfsHash}`,
+        image: `ipfs://${imageHash.IpfsHash}/${imageName}`,
+        animation_url: `ipfs://${glbHash.IpfsHash}/${glbName}`,
         attributes,
       }
       const str = JSON.stringify(metadata)
@@ -94,12 +102,12 @@ export default function MintPopup({templateInfo}) {
       const metadataIpfs = metaDataHash.IpfsHash
 
       setMintStatus("Minting...")
-      const chainId = 137 // 1: ethereum mainnet, 4: rinkeby 137: polygon mainnet 5: // Goerli testnet
+      const chainId = 5 // 1: ethereum mainnet, 4: rinkeby 137: polygon mainnet 5: // Goerli testnet
       if (window.ethereum.networkVersion !== chainId) {
         try {
           await window.ethereum.request({
             method: "wallet_switchEthereumChain",
-            params: [{ chainId: "0x89" }], // 0x4 is rinkeby. Ox1 is ethereum mainnet. 0x89 polygon mainnet  0x5: // Goerli testnet
+            params: [{ chainId: "0x5" }], // 0x4 is rinkeby. Ox1 is ethereum mainnet. 0x89 polygon mainnet  0x5: // Goerli testnet
           })
         } catch (err) {
           // notifymessage("Please check the Ethereum mainnet", "error");
@@ -121,6 +129,7 @@ export default function MintPopup({templateInfo}) {
         let res = await tx.wait()
         if (res.transactionHash) {
           setMintStatus("Mint success!")
+          setCurrentView(ViewStates.MINT_COMPLETE)
         }
       } catch (err) {
         setMintStatus("Public Mint failed! Please check your wallet.")
@@ -132,7 +141,8 @@ export default function MintPopup({templateInfo}) {
 
   const checkOT = async (address) => {
     if(address) {
-      const address = '0x6e58309CD851A5B124E3A56768a42d12f3B6D104'
+      // const address = '0x6e58309CD851A5B124E3A56768a42d12f3B6D104'
+      const chainId = 1 // 1: ethereum mainnet, 4: rinkeby 137: polygon mainnet 5: // Goerli testnet
       const ethersigner = ethers.getDefaultProvider("mainnet", {
         alchemy: import.meta.env.VITE_ALCHEMY_API_KEY,
       })
@@ -200,12 +210,12 @@ export default function MintPopup({templateInfo}) {
               <div className={styles["ButtonPanel"]}>
                 <div
                   className={styles["StyledButton"]}
-                  // onClick={() => setCurrentAppMode(ViewStates.CREATOR)}
+                  onClick={() => setCurrentView(ViewStates.CREATOR)}
                 >
                   {" "}
-                  {"OK"}
+                  {currentView === ViewStates.MINT_COMPLETE ? "Ok" : "Cancel"}
                 </div>
-                {false && (
+                {currentView !== ViewStates.MINT_COMPLETE && (
                   <div
                     className={styles["StyledButton"]}
                     onClick={() => mintAsset(model)}

@@ -1,19 +1,19 @@
 /* TASK: rewrite the above styled component to use CSS modules. instead of nesting classes, format them with CSS to be individual classes. use the default values instead of props */
 
 .LoadingStyleBox {
-    z-index: 10000000;
+    z-index: 1000;
     width: 100vw;
     height: 100vh;
     top: 0;
     left: 0;
-    position: fixed;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    -webkit-user-select : none;
     user-select: none;
     overflow: hidden;
-    background: #000000;
+    background: "black"
 }
 
 .loading-text {
@@ -22,45 +22,62 @@
     font-weight: 400;
     font-size: 18px;
     position: relative;
-    top: 1em;
+    top: -1em;
     line-height: 32px;
     text-align: center;
     color: #FFFFFF;
-    display: inline-block;
 }
 
-@keyframes spinner {
-    0% {
-      transform: rotate(0deg);
-    }
-    100% {
-      transform: rotate(360deg);
-    }
-  }
-  .loading-spinner {
-    width: 5em;
-    height: 5em;
+.loading-bar {
+    display: block;
+    width: '50%';
+    height: 7px;
+    background-color: #FFFFFF;
+    border-radius: 10px;
+    transition: width 1s;
+    margin: 3.5px;
+}
 
-    border: 5px solid #860080; /* Light grey */
-    border-top: 5px solid #2c0026; /* Black */
-    border-radius: 50%;
-    animation: spinner 1.5s linear infinite;
-    display: inline-block;
-    float: right;
-  }
+.cover-loadingbar {
+    display: block;
+    align-items: center;
+    justify-content: start;
+    width: 50vw;
+    margin-left: auto;
+    margin-right: auto;
+    height: 14px;
+    border: 2px solid #645D8D;
+    border-radius: 10px;
 
+}
+
+.vh-centered {
+    position: absolute;
+}
+
+.loading-bar {
+    display: block;
+    width: '50%';
+    height: 7px;
+    background-color: #FFFFFF;
+    border-radius: 10px;
+    transition: width 1s;
+    margin: 3.5px;
+}
 
 .logo-container {
     bottom: 0;
     position: absolute;
+
+
 }
 
-.webamark {
+.atlasmark {
     position: absolute;
     left: 50%;
     transform: translate(-50%, 0);
     width: 100px;
-    bottom: 10vh;
+
 }
 
 .logo-gradient {
