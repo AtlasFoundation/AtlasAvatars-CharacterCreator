@@ -1,0 +1,282 @@
+
+@font-face {
+    font-family: 'Poppins', sans-serif;
+    src: url('https://fonts.googleapis.com/css2?family=Poppins:wght@600&display=swap')  format("truetype");
+  }
+ 
+@keyframes fadeIn { 
+    from {
+        opacity: 0;
+        transform: translate3d(0, -50%, 0);
+    }
+    to {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+    }
+}
+
+@keyframes fadeleft {
+    from {
+        opacity: 0;
+        transform: translate3d(-100%, 0, 0);
+    }
+    to {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+    }
+}
+
+@keyframes fadeRight {
+    from {
+        opacity: 1;
+        transform: skewX(-15deg);
+        transform: translate3d(0%, 0, 0);
+    }
+    to {
+        opacity: 0;
+        transform: translate3d(1005, 0, 0);
+        transform: skewX(-15deg);
+    }
+}
+
+.StyledLanding {
+    background-image: url('/ui/landingbackground.jpg');
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    background-position: center center;
+    height: 100vh;
+    width: 100vw;
+    background-size: cover;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow: hidden;
+    position: absolute;
+    z-index: -1;
+}
+.topBanner {
+    background : radial-gradient(49.5% 173.11% at 50.84% -79.89%, #95414E 30.36%, rgba(137, 61, 73, 0) 100%);
+    width : 1377px;
+    top : 0px;
+    display : flex;
+    flex-direction : column;
+    animation: fadeIn 1s ease-in both;
+}
+
+.logo {
+    width: calc(400vh * 0.118);
+    height: calc(148.83vh * 0.118);
+    display: inline-block;
+    margin: 41px auto auto;
+}
+
+.studio {
+    color : #61E5F9;
+    font-family : 'Poppins';
+    font-style : normal;
+    font-weight : 800;
+    font-size : calc(30vh * 0.118);
+    line-height : calc(49vh * 0.118);
+    text-align : center;
+    margin-top : calc(12vh * 0.118);
+}
+
+.subTitle {
+    color : rgb(255, 255, 255);
+    font-family : Poppins;
+    font-style : normal;
+    font-weight : 400;
+    font-size : calc(30vh * 0.118);
+    line-height : calc(49vh * 0.118);
+    text-align : center;
+    margin-top : calc(20vh * 0.118);
+    animation: fadeIn 1s ease-in both;
+}
+
+.subTitle-text {
+    color : white;
+    font-family : Proxima;
+    font-style : normal;
+    font-weight : 400;
+    font-size : calc(30vh * 0.118);
+    line-height : calc(49vh * 0.118);
+    text-align : center;
+    top: 80%;
+    left: 50%;
+    -ms-transform: translateX(-50%) translateY(-50%);
+    -webkit-transform: translateX(-50%) translateY(-50%);
+    transform: translateX(-50%) translateY(-50%);
+    position: absolute;
+    z-index: 20;
+}
+
+.subTitle-desc {
+    font-size : calc(20vh * 0.118);
+    line-height : calc(37vh * 0.118);
+    font-style: normal;
+    font-weight: 400;
+}
+
+.imgs {
+    position: absolute;
+    width: 100vw;
+    user-select : none;
+    margin-top: 30px;
+}
+
+.characterGroup {
+    animation-name : fadeleft;
+    animation-duration: 0.5s;
+    animation-timing-function: ease-in-out;
+    animation-fill-mode: both;
+    max-width: 100vw;
+    margin: auto;
+    position: center center;
+}
+
+
+.selection-box {
+    background-color: transparent;
+    z-index: 10;
+    bottom: 48px;
+    width: 40vw;
+    position: absolute;
+    padding: 8px 12px 24px 12px;
+    text-align: center;
+    max-width: 200px;
+}
+
+.selection-box * {
+    font-family: 'Poppins' !important;
+    background: rgba(53, 219, 255, 0.29);
+    border-radius: 16px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    -webkit-backdrop-filter: blur(4.5px);
+    backdrop-filter: blur(4.5px);
+    border: 1px solid rgba(53, 219, 255, 0.39);
+    -webkit-user-select : none;
+    user-select: none;
+}
+
+.selection-box.right {
+    right: 48px;
+    background: rgba(53, 219, 255, 0.29);
+    border-radius: 16px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    -webkit-backdrop-filter: blur(4.5px);
+    backdrop-filter: blur(4.5px);
+    border: 1px solid rgba(53, 219, 255, 0.39);
+    -webkit-user-select : none;
+    user-select: none;
+}
+
+.selection-box.left {
+    left: 48px;
+    background: rgba(53, 219, 255, 0.29);
+    border-radius: 16px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    -webkit-backdrop-filter: blur(4.5px);
+    backdrop-filter: blur(4.5px);
+    border: 1px solid rgba(53, 219, 255, 0.39);
+    -webkit-user-select : none;
+    user-select: none;
+}
+
+.selection-box .backdrop {
+    background: rgba(53, 219, 255, 0.29);
+    border-radius: 16px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    -webkit-backdrop-filter: blur(4.5px);
+    backdrop-filter: blur(4.5px);
+    border: 1px solid rgba(53, 219, 255, 0.39);
+    -webkit-user-select : none;
+    user-select: none;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    opacity: 0.8;
+}
+
+.selection-box .backdrop::before {
+    display: block;
+    content: ' ';
+    position: absolute;
+    top: 0;
+    left: -20px;
+    height: 100%;
+    width: 40px;
+    background: rgba(53, 219, 255, 0.29);
+    border-radius: 16px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    -webkit-backdrop-filter: blur(4.5px);
+    backdrop-filter: blur(4.5px);
+    border: 1px solid rgba(53, 219, 255, 0.39);
+    -webkit-user-select : none;
+    user-select: none;
+}
+
+.selection-box .backdrop::after {
+    display: block;
+    content: ' ';
+    position: absolute;
+    top: 0;
+    right: -20px;
+    height: 100%;
+    width: 40px;
+    background: rgba(53, 219, 255, 0.29);
+    border-radius: 10px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    -webkit-backdrop-filter: blur(4.5px);
+    backdrop-filter: blur(4.5px);
+    border: 1px solid rgba(53, 219, 255, 0.39);
+    -webkit-user-select : none;
+    user-select: none;
+}
+
+.selection-box .box {
+    position: relative;
+    z-index: 2;
+    background: rgba(53, 219, 255, 0.29);
+    border-radius: 16px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    -webkit-backdrop-filter: blur(4.5px);
+    backdrop-filter: blur(4.5px);
+    border: 1px solid rgba(53, 219, 255, 0.39);
+    -webkit-user-select : none;
+    user-select: none;
+}
+
+.selection-box h2 {
+    align-items: center;
+    text-transform: uppercase;
+    color: #00bfff;
+    padding: auto;
+    font-size: 20px;
+}
+
+.selection-box p {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+    color: #FFFFFF;
+    line-height: 20px;
+    width: 100%;
+    padding: auto;
+}
+
+.selection-box .box button {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: auto;
+    justify-content: center;
+    background-color: #00bfff;
+    border-radius: 1px;
+    width: 100%;
+    text-align: center;
+}

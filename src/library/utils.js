@@ -5,73 +5,52 @@ import html2canvas from "html2canvas";
 import VRMExporter from "./VRMExporter";
 import { CullHiddenFaces } from './cull-mesh.js';
 import { combine } from "./merge-geometry";
-import { VRMLoaderPlugin } from "@pixiv/three-vrm"
-import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader"
-import { VRMHumanBoneName } from "@pixiv/three-vrm";
 
-export function getAsArray(target) {
-  if (target == null) return []
-  return Array.isArray(target) ? target : [target]
-}
-
-export async function prepareModel(templateInfo){
-  // check the local storage for a JSON of the model
-  // if it exists, load it
-
-  // if it doesn't exist, fetch the first trait for each category from the server
-  console.log('templateInfo', templateInfo)
-  // grab the first trait for each category
-  const traits = templateInfo.traits.map((category) => {
-    return category.traits[0]
-  })
-  
-  traits.forEach((trait) => {
-    console.log('trait', trait)
-  });
-
-  const returnedTraits = await Promise.all(traits.map((trait) => {
-    return loadModel(trait)
-  }));
-
-  console.log('returnedTraits', returnedTraits)
-
-}
-
-
-
-export async function loadModel(file, onProgress) {
-  const gltfLoader = new GLTFLoader()
-  gltfLoader.register((parser) => {
-    return new VRMLoaderPlugin(parser)
-  })
-  return gltfLoader.loadAsync(file, onProgress).then((model) => {
-    const vrm = model.userData.vrm
-    renameVRMBones(vrm)
-
-    vrm.scene?.traverse((child) => {
-      child.frustumCulled = false
-    })
-    return vrm
-  })
-}
-
-export const cullHiddenMeshes = (avatar) => {
-  const models = []
+export const cullHiddenMeshes = (avatar, scene, avatarTemplateSpec) => {
+  const models = [];
   for (const property in avatar) {
-    const vrm = avatar[property].vrm
+    const vrm = avatar[property].vrm;
     if (vrm) {
-      const cullLayer = vrm.data.cullingLayer
+      const cullLayer = vrm.data.cullingLayer;
       if (cullLayer >= 0) { 
-        vrm.data.cullingMeshes.map((mesh)=>{
-          mesh.userData.cullLayer = cullLayer
-          mesh.userData.cullDistance = vrm.data.cullingDistance
-          models.push(mesh)
-        })
+        vrm.scene.traverse((child) => {
+          if (child.isMesh) {
+            child.userData.cullLayer = cullLayer;
+            child.userData.cullDistance = vrm.data.cullingDistance;
+            models.push(child);
+          }
+        });
       }
     }
   }
-  CullHiddenFaces(models)
-}
+  const targets = avatarTemplateSpec.cullingModel;
+  if (targets) {
+    for (let i = 0; i < targets.length; i++) {
+      const obj = scene.getObjectByName(targets[i]);
+      if (obj != null) {
+
+        if (obj.isMesh) {
+          obj.userData.cullLayer = 0;
+          models.push(obj);
+          //DisplayMeshIfVisible(obj, traitModel);
+        }
+        if (obj.isGroup) {
+          obj.traverse((child) => {
+            if (child.parent === obj && child.isMesh) {
+              child.userData.cullLayer = 0;
+              models.push(child);
+              //DisplayMeshIfVisible(child, traitModel);
+            }
+          });
+        }
+      }
+      else {
+        console.warn(targets[i] + " not found");
+      }
+    }
+    CullHiddenFaces(models);
+  }
+};
 
 export async function getModelFromScene(avatarScene, format = 'glb', skinColor = new THREE.Color(1, 1, 1)) {
   if (format && format === 'glb') {
@@ -364,73 +343,6 @@ export function findChildrenByType(root, type) {
         candidates: [root],
         predicate: (o) => o.type === type,
     });
-}
-export function getAvatarData (avatarModel, modelName){
-  const skinnedMeshes = findChildrenByType(avatarModel, "SkinnedMesh")
-  return{
-    humanBones:getHumanoidByBoneNames(skinnedMeshes[0]),
-    materials : [avatarModel.userData.atlasMaterial],
-    meta : getVRMMeta(modelName)
-  }
-
-}
-
-
-function getVRMMeta(name){
-  return {
-    authors:["Webaverse"],
-    metaVersion:"1",
-    version:"v1",
-    name:name,
-    licenseURL:"https://webaverse.com/",
-    commercialUssageName: "personalNonProfit",
-    contactInformation: "https://webaverse.com/", 
-    allowExcessivelyViolentUsage:false,
-    allowExcessivelySexualUsage:false,
-    allowPoliticalOrReligiousUsage:false,
-    allowAntisocialOrHateUsage:false,
-    creditNotation:"required",
-    allowRedistribution:false,
-    modification:"prohibited"
-  }
-}
-
-function getVRMDefaultLookAt(){
-  return {
-    offsetFromHeadBone:[0,0,0],
-    applier:{
-      rangeMapHorizontalInner:{
-        inputMaxValue:90,
-        inputSacle:62.1
-      },
-      rangeMapHorizontalOuter:{
-        inputMaxValue:90,
-        inputSacle:68.6
-      },
-      rangeMapVerticalDown:{
-        inputMaxValue:90,
-        inputSacle:57.9
-      },
-      rangeMapVerticalUp:{
-        inputMaxValue:90,
-        inputSacle:52.8
-      }
-    },
-    type:"bone"
-  }
-
-}
-function getHumanoidByBoneNames(skinnedMesh){
-  const humanBones = {}
-  skinnedMesh.skeleton.bones.map((bone)=>{
-    for (const boneName in VRMHumanBoneName) {
-      if (VRMHumanBoneName[boneName] === bone.name){
-        humanBones[bone.name] ={node : bone};
-        break;
-      }
-    }
-  })
-  return humanBones
 }
 function traverseWithDepth({ object3D, depth = 0, callback, result }) {
     result.push(callback(object3D, depth));

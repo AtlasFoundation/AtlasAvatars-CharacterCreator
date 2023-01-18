@@ -1,5 +1,5 @@
 .backgroundImg {
-    background-image: url('/ui/background.png');
+    background-image: url('/ui/lounge.png');
     background-attachment: fixed;
     background-repeat: no-repeat;
     background-position: center center;
@@ -11,7 +11,7 @@
     align-items: center;
     overflow: hidden;
     position: absolute;
-    z-index: -100;
+    z-index: -1;
 }
 
 
@@ -23,7 +23,7 @@
     overflow: hidden;
   }
   
-  .webamark {
+  .atlasmark {
     position: absolute;
     left: 0;
     top: 0;
@@ -33,10 +33,9 @@
   
   .logo {
     position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    width: 100vh;
-    height: 100vh;
-    opacity: 0.05;
+    left: 5%;
+    top: 2%;
+    width: 20em;
+    height: 5em;
+    opacity: 1;
   }
