@@ -1,41 +1,35 @@
 .SelectorContainerPos {
   position: absolute;
-  top: 10vh;
+  top: 20vh;
   right: 2em;
-  height: 80vh;
+  height: 60vh;
   overflow-y: scroll;
   overflow-x: none;
-  background: rgba(53, 219, 255, 0.29);
-  border-radius: 16px;
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(4.5px);
-  -webkit-backdrop-filter: blur(4.5px);
-  border: 1px solid rgba(53, 219, 255, 0.39);
-  user-select : none;
-  -webkit-user-select : none;
+  border: 1px solid #38404E;
+  border-radius : 5px;
+  backdrop-filter: blur(22.5px);
+  transform: perspective(70vh) rotateY(-5deg);
+  z-index:1000;
+  cursor: pointer;
 }
 
 .selector-container {
   background: rgba(56, 64, 78, 0.1);
   border-radius: .25em;
   user-select: none;
-
   flex: 1;
 }
 
 .selector-button {
-  opacity: 1;
+  opacity: 0.5;
 }
 
 .selector-button:hover {
   opacity: 1;
-  background-color: aqua;
 }
 
 .active {
-  opacity: .8;
-  background-color: aqua;
-
+  opacity: 1;
 }
 
 .SelectorContainerPos::-webkit-scrollbar {
@@ -65,7 +59,7 @@
 }
 
 .trait-icon {
-    height: 10em;
+    height: 4em;
     margin: auto;
     user-select: none;
     position: relative;
@@ -87,7 +81,8 @@
   width: 4em;
   text-align: center;
   line-height: 52px;
-  background-color: rgba(16, 16, 16, 0.6);
+  background-color: rgba(16, 16, 16, 0.3);
+  border-radius: 1em;
   z-index: 999;
   position: absolute;
   display: block;
@@ -106,7 +101,8 @@
   top: 0;
   width: 100%;
   height: 98%;
-  background-color: rgba(16, 16, 16, 0.8);
+  background-color: rgba(16, 16, 16, 0.3);
+  border-radius: 1em;
   cursor: wait;
 }
 

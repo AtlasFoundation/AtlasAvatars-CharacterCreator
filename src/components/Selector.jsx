@@ -6,7 +6,7 @@ import useSound from "use-sound"
 import cancel from "../../public/ui/selector/cancel.png"
 import { addModelData, disposeVRM } from "../library/utils"
 import { computeBoundsTree, disposeBoundsTree, acceleratedRaycast, SAH } from 'three-mesh-bvh';
-
+import {ViewContext} from "../context/ViewContext"
 import sectionClick from "../../public/sound/section_click.wav"
 import tick from "../../public/ui/selector/tick.svg"
 import { AudioContext } from "../context/AudioContext"
@@ -16,6 +16,8 @@ import {
   createFaceNormals,
   createBoneDirection,
 } from "../library/utils"
+import { LipSync } from '../library/lipsync'
+import { getAsArray } from "../library/utils"
 
 import styles from "./Selector.module.css"
 
@@ -23,30 +25,35 @@ THREE.BufferGeometry.prototype.computeBoundsTree = computeBoundsTree;
 THREE.BufferGeometry.prototype.disposeBoundsTree = disposeBoundsTree;
 THREE.Mesh.prototype.raycast = acceleratedRaycast;
 
-export default function Selector() {
+export default function Selector({templateInfo, animationManager, blinkManager, selectClass}) {
   const {
     avatar,
     setAvatar,
-    currentTemplate,
     currentTraitName,
-    template,
     currentOptions,
     selectedOptions,
+    setSelectedOptions,
     model,
-    animationManager,
     setTraitsNecks,
-    setTraitsSpines
+    setTraitsSpines,
+    setTraitsLeftEye,
+    setTraitsRightEye,
+    setLipSync,
+    mousePosition,
+    removeOption
   } = useContext(SceneContext)
-  const currentTemplateIndex = parseInt(currentTemplate.index)
-  const templateInfo = template[currentTemplateIndex]
   const { isMute } = useContext(AudioContext)
+  const {setLoading} = useContext(ViewContext)
 
   const [selectValue, setSelectValue] = useState("0")
   const [loadPercentage, setLoadPercentage] = useState(1)
-  const getAsArray = (target) => {
-    if (target == null) return []
-    return Array.isArray(target) ? target : [target]
-  }
+  const [restrictions, setRestrictions] = useState(null)
+
+  useEffect(() => {
+    //setSelectedOptions (getMultipleRandomTraits(initialTraits))
+    console.log(templateInfo)
+    setRestrictions(getRestrictions());
+  },[templateInfo])
 
   const getRestrictions = () => {
     
@@ -109,29 +116,37 @@ export default function Selector() {
     }
   }
 
-  const restrictions = getRestrictions()
-
   // options are selected by random or start
   useEffect(() => {
-    loadOptions(selectedOptions).then((loadedData)=>{
-      let newAvatar = {};
-      loadedData.map((data)=>{
-        newAvatar = {...newAvatar, ...itemAssign(data)}
+    if (selectedOptions.length > 0){
+      loadOptions(selectedOptions).then((loadedData)=>{
+        let newAvatar = {};
+        loadedData.map((data)=>{
+          newAvatar = {...newAvatar, ...itemAssign(data)}
+        })
+        setAvatar({...avatar, ...newAvatar})
       })
-      setAvatar({...avatar, ...newAvatar})
-    })
+      setSelectedOptions([]);
+    }
 
   },[selectedOptions])
   // user selects an option
   const selectTraitOption = (option) => {
+    
     if (option == null){
       option = {
         item:null,
         trait:templateInfo.traits.find((t) => t.name === currentTraitName)
       }
     }
-
-    loadOptions([option]).then((loadedData)=>{
+    if (option.avatarIndex != null){
+      selectClass(option.avatarIndex)
+      return
+    }
+    
+    console.log(option)
+    
+    loadOptions(getAsArray(option)).then((loadedData)=>{
       let newAvatar = {};
       
       loadedData.map((data)=>{
@@ -146,6 +161,7 @@ export default function Selector() {
   
   // load options first
   const loadOptions = (options) => {
+
     // filter options by restrictions
     options = filterRestrictedOptions(options);
 
@@ -183,6 +199,9 @@ export default function Selector() {
       loadingManager.onLoad = function (){
         setLoadPercentage(0)
         resolve(resultData);
+        setTimeout(() => {
+          setLoading(false)
+        }, 1000);
       };
       loadingManager.onError = function (url){
         console.warn("error loading " + url)
@@ -201,9 +220,9 @@ export default function Selector() {
           return;
         }
         // load model trait
-        const loadedModels = []; 
-        getAsArray(option?.item?.directory).map((modelDir, i)=>{
-          gltfLoader.loadAsync (baseDir + modelDir).then((mod)=>{
+        const loadedModels = [];
+        getAsArray(option?.item?.directory).map((modelDir, i) => {
+          gltfLoader.loadAsync (baseDir + modelDir).then((mod) => {
             loadedModels[i] = mod;
           })
         })
@@ -240,23 +259,29 @@ export default function Selector() {
       
      //if this option is not already in the remove traits list then:
      if (!removeTraits.includes(option.trait.name)){
+        const typeRestrictions = restrictions?.typeRestrictions;
         // type restrictions = what `type` cannot go wit this trait or this type
-        getAsArray(option.item?.type).map((t)=>{
-          //combine to array
-          removeTraits = [...new Set([
-            ...removeTraits , // get previous remove traits
-            ...findTraitsWithTypes(getAsArray(restrictions.typeRestrictions[t]?.restrictedTypes)),  //get by restricted traits by types coincidence
-            ...getAsArray(restrictions.typeRestrictions[t]?.restrictedTraits)])]  // get by restricted trait setup
+        if (typeRestrictions){
+          getAsArray(option.item?.type).map((t)=>{
+            //combine to array
+            removeTraits = [...new Set([
+              ...removeTraits , // get previous remove traits
+              ...findTraitsWithTypes(getAsArray(typeRestrictions[t]?.restrictedTypes)),  //get by restricted traits by types coincidence
+              ...getAsArray(typeRestrictions[t]?.restrictedTraits)])]  // get by restricted trait setup
 
-        })
+          })
+        }
 
         // trait restrictions = what `trait` cannot go wit this trait or this type
-        removeTraits = [...new Set([
-          ...removeTraits,
-          ...findTraitsWithTypes(getAsArray(restrictions.traitRestrictions[option.trait.name]?.restrictedTypes)),
-          ...getAsArray(restrictions.traitRestrictions[option.trait.name]?.restrictedTraits),
+        const traitRestrictions = restrictions?.traitRestrictions;
+        if (traitRestrictions){
+          removeTraits = [...new Set([
+            ...removeTraits,
+            ...findTraitsWithTypes(getAsArray(traitRestrictions[option.trait.name]?.restrictedTypes)),
+            ...getAsArray(traitRestrictions[option.trait.name]?.restrictedTraits),
 
-        ])]
+          ])]
+        }
       }
     }
 
@@ -312,14 +337,14 @@ export default function Selector() {
     const colors = itemData.colors;
     // null section (when user selects to remove an option)
     if ( item == null) {
-      if ( avatar[traitData.name] && avatar[traitData.name].vrm ){
-        disposeVRM(avatar[traitData.name].vrm)
-        // setAvatar({
-        //   ...avatar,
-        //   [traitData.name]: {},
-        // })
-        setSelectValue("")
+      // if avatar exists and trait exsits, remove it
+      if (avatar){
+        if ( avatar[traitData.name] && avatar[traitData.name].vrm ){
+          disposeVRM(avatar[traitData.name].vrm)
+          setSelectValue("")
+        }
       }
+      // always return an empty trait here when receiving null item
       return {
         [traitData.name]: {}
       }
@@ -328,35 +353,25 @@ export default function Selector() {
     // save an array of mesh targets
     const meshTargets = [];
     
-
+   
     // add culling data to each model TODO,  if user defines target culling meshes set them before here
     // models are vrm in some cases!, beware
     let vrm = null
+    
     models.map((m)=>{
       // basic vrm setup (only if model is vrm)
       vrm = m.userData.vrm;
+      
+      if (getAsArray(templateInfo.lipSyncTraits).indexOf(traitData.trait) !== -1)
+        setLipSync(new LipSync(vrm));
       renameVRMBones(vrm)
 
-      
+      if (getAsArray(templateInfo.blinkerTraits).indexOf(traitData.trait) !== -1)
+        blinkManager.addBlinker(vrm)
 
       // animation setup section
       // play animations on this vrm  TODO, letscreate a single animation manager per traitInfo, as model may change since it is now a trait option
-      if (animationManager){
-        animationManager.startAnimation(vrm)
-      }
-
-      // culling layers setup section
-
-      addModelData(vrm, {
-        cullingLayer: 
-          item.cullingLayer != null ? item.cullingLayer: 
-          traitData.cullingLayer != null ? traitData.cullingLayer: 
-          templateInfo.defaultCullingLayer != null?templateInfo.defaultCullingLayer: -1,
-        cullingDistance: 
-          item.cullingDistance != null ? item.cullingDistance: 
-          traitData.cullingDistance != null ? traitData.cullingDistance:
-          templateInfo.defaultCullingDistance != null ? templateInfo.defaultCullingDistance: null,
-      })  
+      animationManager.startAnimation(vrm)
 
       // mesh target setup section
       if (item.meshTargets){
@@ -366,6 +381,9 @@ export default function Selector() {
         })
       }
       
+      const cullingIgnore = getAsArray(item.cullingIgnore)
+      const cullingMeshes = [];
+
       vrm.scene.traverse((child) => {
         
         // mesh target setup secondary swection
@@ -374,29 +392,42 @@ export default function Selector() {
         // basic setup
         child.frustumCulled = false
         if (child.isMesh) {
+          // if a mesh is found in name to be ignored, dont add it to target cull meshes
+          if (cullingIgnore.indexOf(child.name) === -1)
+            cullingMeshes.push(child)
+
           if (child.geometry.boundsTree == null)
             child.geometry.computeBoundsTree({strategy:SAH});
 
           createFaceNormals(child.geometry)
           if (child.isSkinnedMesh) createBoneDirection(child)
         }
-        
         if (child.isBone && child.name == 'neck') { 
           setTraitsNecks(current => [...current , child])
         }
         if (child.isBone && child.name == 'spine') { 
           setTraitsSpines(current => [...current , child])
         }
-        // if (child.isBone && child.name === 'leftEye') { 
-        //   setLeft(child);
-        // }
-        // if (child.isBone && child.name === 'rightEye') { 
-        //   setRight(child);
-        // }
-        
+        if (child.isBone && child.name === 'leftEye') { 
+          setTraitsLeftEye(current => [...current , child])
+        }
+        if (child.isBone && child.name === 'rightEye') { 
+          setTraitsRightEye(current => [...current , child])
+        }
       })
 
-      
+      // culling layers setup section
+      addModelData(vrm, {
+        cullingLayer: 
+          item.cullingLayer != null ? item.cullingLayer: 
+          traitData.cullingLayer != null ? traitData.cullingLayer: 
+          templateInfo.defaultCullingLayer != null?templateInfo.defaultCullingLayer: -1,
+        cullingDistance: 
+          item.cullingDistance != null ? item.cullingDistance: 
+          traitData.cullingDistance != null ? traitData.cullingDistance:
+          templateInfo.defaultCullingDistance != null ? templateInfo.defaultCullingDistance: null,
+        cullingMeshes
+      })  
     })
 
     // once the setup is done, assign them
@@ -418,15 +449,31 @@ export default function Selector() {
     })
     
     // if there was a previous loaded model, remove it (maybe also remove loaded textures?)
-    if (avatar[traitData.name] && avatar[traitData.name].vrm) {
-      //if (avatar[traitData.name].vrm != vrm)  // make sure its not the same vrm as the current loaded
-        disposeVRM(avatar[traitData.name].vrm)
+    if (avatar){
+      if (avatar[traitData.name] && avatar[traitData.name].vrm) {
+        //if (avatar[traitData.name].vrm != vrm)  // make sure its not the same vrm as the current loaded
+        setTimeout(() => {
+          disposeVRM(avatar[traitData.name].vrm)
+        }, 50)
+      }
     }
+    
+    if(vrm) {
+      const m = vrm.scene;
+      m.visible = false;
+      // add the now model to the current scene
+      model.add(m)
+      setTimeout(() => {
+        m.visible = true;
+      }, 50)
 
-    // add the now model to the current scene
-    model.add(vrm.scene)
-    
-    
+      // update the joint rotation of the new trait
+      const event = new Event('modelUpdate');
+      event.x = mousePosition.x;
+      event.y = mousePosition.y;
+      event.model = m;
+      window.dispatchEvent(event);
+    }
 
     // and then add the new avatar data
     // to do, we are now able to load multiple vrm models per options, set the options to include vrm arrays
@@ -434,7 +481,7 @@ export default function Selector() {
       [traitData.name]: {
         traitInfo: item,
         name: item.name,
-        model: vrm.scene,
+        model: vrm && vrm.scene,
         vrm: vrm,
       }
     }
@@ -446,37 +493,11 @@ export default function Selector() {
 
   const [play] = useSound(sectionClick, { volume: 1.0 })
 
-  useEffect(() => {
-    let buffer = { ...(avatar ?? {}) }
-
-    ;(async () => {
-      let newAvatar = {}
-      // for trait in traits
-      for (const property in buffer) {
-        if (buffer[property].vrm) {
-          if (newAvatar[property] && newAvatar[property].vrm != buffer[property].vrm) {
-            if (newAvatar[property].vrm != null) {
-              disposeVRM(newAvatar[property].vrm)
-            }
-          }
-          model.data.animationManager.startAnimation(buffer[property].vrm)
-          // wait one frame before adding to scene so animation doesn't glitch
-          setTimeout(() => {
-            model.scene.add(buffer[property].vrm.scene)
-          }, 1)
-        }
-      }
-      setAvatar({
-        ...avatar,
-        ...buffer,
-      })
-    })()
-  }, [])
   // if head <Skin templateInfo={templateInfo} avatar={avatar} />
 
   function ClearTraitButton() {
     // clear the current trait
-    return (
+    return removeOption ? (
       <div
         className={
           !currentTraitName
@@ -494,7 +515,7 @@ export default function Selector() {
           style={{ width: "4em", height: "4em" }}
         />
       </div>
-    )
+    ):<></>
   }
   return (
     !!currentTraitName && (
@@ -519,11 +540,7 @@ export default function Selector() {
               <img
                 className={styles["trait-icon"]}
                 style={option.iconHSL ? {filter: "brightness("+((option.iconHSL.l)+0.5)+") hue-rotate("+(option.iconHSL.h * 360)+"deg) saturate("+(option.iconHSL.s * 100)+"%)"} : {}}
-                // style={option.iconHSL ? 
-                //   `filter: brightness(${option.iconHSL.l}) 
-                //   saturate(${option.iconHSL.s * 100}%) 
-                //   hue(${option.iconHSL.s * 360}deg);`:""}
-                src={`${templateInfo.thumbnailsDirectory}${option.icon}`}
+                src={option.icon}
               />
               <img
                 src={tick}
@@ -536,7 +553,7 @@ export default function Selector() {
               />
               {active && loadPercentage > 0 && loadPercentage < 100 && (
                 <div className={styles["loading-trait"]}>
-                  {loadPercentage}%
+                  {loadPercentage}
                 </div>
               )}
             </div>)

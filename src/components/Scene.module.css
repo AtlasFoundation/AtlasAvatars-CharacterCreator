@@ -13,14 +13,14 @@
 }
 
 .Background {
-  background: url('/ui/background.png');
+  background: url('/ui/mainBackground.png');
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
   overflow: hidden;
 }
 
-.atlasmark {
+.webamark {
   position: absolute;
   left: 0;
   top: 0;

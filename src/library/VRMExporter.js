@@ -1,4 +1,5 @@
 import { BufferAttribute, } from "three";
+import { VRMExpressionPresetName } from "@pixiv/three-vrm";
 function ToOutputVRMMeta(vrmMeta, icon, outputImage) {
     return {
         allowedUserName: vrmMeta.allowedUserName,
@@ -16,6 +17,28 @@ function ToOutputVRMMeta(vrmMeta, icon, outputImage) {
         violentUssageName: vrmMeta.violentUssageName,
     };
 }
+// function getVRM0BlendshapeName(curName){
+//     switch(curName){
+//       case "happy":
+//         return "joy"
+//       case "sad":
+//         return "sorrow"
+//       case "relaxed":
+//         return "fun"
+//       case "aa":
+//         return "a"
+//       case "ih":
+//         return "i"
+//       case "ou":
+//         return "u"
+//       case "ee":
+//         return "e"
+//       case "oh":
+//         return "o"
+//       default:
+//         return curName;
+//     }
+//   }
 // WebGL(OpenGL)マクロ定数
 var WEBGL_CONST;
 (function (WEBGL_CONST) {
@@ -33,7 +56,7 @@ var WEBGL_CONST;
 const BLENDSHAPE_PREFIX = "blend_";
 const MORPH_CONTROLLER_PREFIX = "BlendShapeController_";
 const SPRINGBONE_COLLIDER_NAME = "vrmColliderSphere";
-const EXPORTER_VERSION = "UniVRM-0.64.0";
+const EXPORTER_VERSION = "alpha-v1.0";
 const CHUNK_TYPE_JSON = "JSON";
 const CHUNK_TYPE_BIN = "BIN\x00";
 const GLTF_VERSION = 2;
@@ -44,10 +67,12 @@ export default class VRMExporter {
         const vrmMeta = vrm.meta;
         const materials = vrm.materials;
         const expressionsPreset = {};
-        //console.log(vrm)
-        //const blendShapeProxy = vrm.blendShapeProxy;
+        const expressionCustom = {};
+        const expressions = {};
         const lookAt = vrm.lookAt;
-        const springBone = vrm.springBoneManager;
+
+        // to do, add support to spring bones
+        //const springBone = vrm.springBoneManager;
         const exporterInfo = {
             // TODO: データがなくて取得できない
             generator: "UniGLTF-2.0.0",
@@ -66,15 +91,14 @@ export default class VRMExporter {
         else if (!materials) {
             throw new Error("materials is undefined or null");
         }
-        //else if (!blendShapeProxy) {
-            //throw new Error("blendShapeProxy is undefined or null");
-        //}
         else if (!lookAt) {
             throw new Error("lookAt is undefined or null");
         }
-        else if (!springBone) {
-            throw new Error("springBone is undefined or null");
-        }
+
+        // add support to spring bones
+        // else if (!springBone) {
+        //     throw new Error("springBone is undefined or null");
+        // }
         // TODO: name基準で重複除外 これでいいのか？
         const uniqueMaterials = materials
             .filter((material, index, self) => self.findIndex((e) => e.name === material.name.replace(" (Outline)", "")) === index)
@@ -156,18 +180,43 @@ export default class VRMExporter {
             }
 
             mesh.geometry.userData.targetNames = [];
-            
             for (const prop in vrm.expressionManager.expressionMap){
                 const expression = vrm.expressionManager.expressionMap[prop];
-                const morphs = expression._binds.map(obj => ([{node:0, index:obj.index, weight:obj.weight  }]))
-                expressionsPreset[prop] = {
-                    morphTargetBinds:morphs,
-                    isBinary:expression.overrideBlink,
-                    overrideBlink:expression.overrideBlink,
-                    overrideLookAt:expression.overrideLookAt,
-                    overrideMouth:expression.overrideMouth,
-
+                const morphTargetBinds = expression._binds.map(obj => ({node:0, index:obj.index, weight:obj.weight  }))
+                let isPreset = false;
+                for (const presetName in VRMExpressionPresetName) {
+                    if (prop.toLowerCase() === VRMExpressionPresetName[presetName].toLowerCase()){
+                        expressionsPreset[VRMExpressionPresetName[presetName]] = {
+                            morphTargetBinds,
+                            isBinary:expression.isBinary,
+                            overrideBlink:expression.overrideBlink,
+                            overrideLookAt:expression.overrideLookAt,
+                            overrideMouth:expression.overrideMouth,
+                        }
+                        isPreset = true;
+                        break;
+                    }
                 }
+                if (!isPreset && prop.toLowerCase() === "surprise"){
+                    expressionsPreset["surprised"] = {
+                        morphTargetBinds,
+                        isBinary:expression.isBinary,
+                        overrideBlink:expression.overrideBlink,
+                        overrideLookAt:expression.overrideLookAt,
+                        overrideMouth:expression.overrideMouth,
+                    }
+                    isPreset = true;
+                }
+                if (isPreset === false){
+                    expressionCustom[prop] = {
+                        morphTargetBinds,
+                        isBinary:expression.isBinary,
+                        overrideBlink:expression.overrideBlink,
+                        overrideLookAt:expression.overrideLookAt,
+                        overrideMouth:expression.overrideMouth,
+                    }
+                }
+                
                 // to do, material target binds, and texture transform binds
             }
 
@@ -182,6 +231,11 @@ export default class VRMExporter {
                 meshDatas.push(new MeshData(morphAttribute.normal[morphIndex], WEBGL_CONST.FLOAT, MeshDataType.BLEND_NORMAL, AccessorsType.VEC3, mesh.name, BLENDSHAPE_PREFIX + prop));
             }
         });
+        if (Object.keys(expressionsPreset).length > 0)
+            expressions.preset = expressionsPreset
+
+        if (Object.keys(expressionCustom).length > 0)
+            expressions.custom = expressionCustom
         // inverseBindMatrices length = 16(matrixの要素数) * 4バイト * ボーン数
         // TODO: とりあえず数合わせでrootNode以外のBoneのmatrixをいれた
         meshes.forEach((object) => {
@@ -260,7 +314,8 @@ export default class VRMExporter {
         // TODO: javascript版の弊害によるエラーなので将来的に実装を変える
         //lookAt.firstPerson._firstPersonBoneOffset.z *= -1; // TODO:
         const vrmLookAt = {
-          offsetFromHeadBone: [lookAt.offsetFromHeadBonex,lookAt.offsetFromHeadBone.y,lookAt.offsetFromHeadBone.z],
+          //offsetFromHeadBone: [lookAt.offsetFromHeadBone.x,lookAt.offsetFromHeadBone.y,lookAt.offsetFromHeadBone.z],
+          offsetFromHeadBone: [0,0,0],
           rangeMapHorizontalInner: {
               inputMaxValue: lookAt.applier.rangeMapHorizontalInner.inputMaxValue,
               outputScale: lookAt.applier.rangeMapHorizontalInner.outputScale,
@@ -279,6 +334,14 @@ export default class VRMExporter {
           },
           type: "bone"
         };
+
+        //temporal, taking the first node as it is the skinned mesh renderer
+        // const vrmFirstPerson = {
+        //     meshAnnotations:[
+        //         {node:243, type:"auto"}
+        //     ]
+        // }
+
         // const vrmFirstPerson = {
         //     firstPersonBone: nodeNames.indexOf(
         //     lookAt.firstPerson._firstPersonBone.name),
@@ -402,17 +465,14 @@ export default class VRMExporter {
             bufferViews: outputBufferViews,
             extensions: {
                 VRMC_vrm: {
-                    expressions: {
-                        preset:expressionsPreset
-                    },
-                    exporterVersion: EXPORTER_VERSION,
+                    expressions,
                     //firstPerson: vrmFirstPerson,
                     humanoid: vrmHumanoid,
                     lookAt: vrmLookAt,
                     meta: outputVrmMeta,
                     //materialProperties: materialProperties,
                     //secondaryAnimation: outputSecondaryAnimation,
-                    specVersion: "0.0", // TODO:
+                    specVersion: "1.0", 
                 },
             },
             extensionsUsed: [
@@ -431,6 +491,7 @@ export default class VRMExporter {
             skins: outputSkins,
             textures: outputTextures,
         };
+        //console.log(outputData)
         const jsonChunk = new GlbChunk(parseString2Binary(JSON.stringify(outputData, undefined, 2)), "JSON");
         const binaryChunk = new GlbChunk(concatBinary(bufferViews.map((buf) => buf.buffer)), "BIN\x00");
         const fileData = concatBinary([jsonChunk.buffer, binaryChunk.buffer]);
@@ -688,7 +749,7 @@ const toOutputMaterials = (uniqueMaterials, images) => {
       material = material.userData.vrmMaterial?material.userData.vrmMaterial:material;
       if (material.type === "ShaderMaterial") {
           VRMC_materials_mtoon = material.userData.gltfExtensions.VRMC_materials_mtoon;
-          VRMC_materials_mtoon.shadeMultiplyTexture = images.map((image) => image.name).indexOf(material.uniforms.shadeMultiplyTexture.name);
+          VRMC_materials_mtoon.shadeMultiplyTexture = {index:images.map((image) => image.name).indexOf(material.uniforms.shadeMultiplyTexture.name)};
 
           const mtoonMaterial = material;
           baseColor = mtoonMaterial.color ? [
