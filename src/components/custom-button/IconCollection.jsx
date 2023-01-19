@@ -92,7 +92,7 @@ export const IconCollection = [
     file: '/assets/icons/class-drop-hunter.svg',
   },
   {
-    name: 'classEndineer',
+    name: 'classEngineer',
     file: '/assets/icons/class-engineer.svg',
   },
   {
