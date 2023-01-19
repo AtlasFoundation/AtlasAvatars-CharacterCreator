@@ -1,6 +1,5 @@
 import React from "react"
-
-import logo from "../../public/ui/Atlaslogo.png"
+import logo from "../ui/Atlaslogo.png"
 import styles from "./Background.module.css"
 
 export default function Background() {

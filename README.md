@@ -11,9 +11,7 @@ npm install avatarcreator
 ![image](https://user-images.githubusercontent.com/64185677/212542253-28ca8a87-ee71-4215-9e4d-b22d285c830c.png)
 ## 3D Avatar Creation Tool and NFT Minting Platform
 
-Our platform is designed to maximize interest in your avatars by incorporating cutting-edge technology and utilizing relevant keywords that will make your avatars more discoverable on thharacter Creator
-3
-e blockchain.
+Our platform is designed to maximize interest in your avatars by incorporating cutting-edge technology and utilizing relevant keywords that will make your avatars more discoverable on the blockchain. We also provide a built-in marketplace where you can buy and sell your avatars as NFTs, giving you the opportunity to monetize your creations.
 
 With our tool, you can easily create your own unique 3D avatar by customizing various features such as body shape, facial features, and clothing. Once your avatar is complete, you can mint it as an NFT and share it on different blockchain networks such as Ethereum, Binance Smart Chain, and Polygon.
 

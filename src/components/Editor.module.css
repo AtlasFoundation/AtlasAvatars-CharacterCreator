@@ -5,18 +5,19 @@
     left: 2em;  
     top: 7em;
     bottom: auto;
-    height: 80vh;
+    height: auto;
+    max-height: 80vh;
     border-radius : 5px;
     box-sizing : border-box;
     /* From https://css.glass */
     background: rgba(53, 219, 255, 0.29);
-    border-radius: 16px;
     box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
     -webkit-backdrop-filter: blur(4.5px);
     backdrop-filter: blur(4.5px);
     border: 1px solid rgba(53, 219, 255, 0.39);
     -webkit-user-select : none;
     user-select: none;
+    width:fit-content;
 }
 
 .LineDivision {
@@ -31,7 +32,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    opacity: 0.8;
+    opacity: 1;
     -webkit-user-select : none;
     user-select: none;
     text-align: center;
@@ -39,11 +40,12 @@
     border-right: '';
     margin:auto;
     src: '';
+    width:fit-content;
 }
 
 .MenuImg:hover {
     opacity: 1;
-    background: rgba(53, 219, 255, 0.29);
+    background-color: aqua;
 }
 
 .MenuOption {
@@ -52,8 +54,17 @@
 
 .MenuOptionSelected {
     opacity: 1;
-    width: 100%;
-}
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    user-select: none;
+    -webkit-user-select : none;
+    text-align: center;
+    cursor:pointer;
+    border-right: '';
+    margin:auto;
+    src: '';
+    background-color: aqua;}
 
 .MenuImgActive {
     opacity: 1;
@@ -67,9 +78,6 @@
     border-right: '';
     margin:auto;
     src: '';
-    margin-left: auto;
-    margin-right: auto;
-    margin-bottom: .1em;
     background-color: aqua;
 }
 
@@ -88,7 +96,7 @@
     display: inline-block;
     text-align: center;
     height: 3.5em;
-    width: 100%;
+    width: 5em;
     text-align: center;
     margin: 0 auto .25em auto;
     user-select: none;

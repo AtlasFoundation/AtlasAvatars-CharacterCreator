@@ -24,15 +24,18 @@
 }
 
 .selector-button {
-  opacity: 0.5;
+  opacity: 1;
 }
 
 .selector-button:hover {
   opacity: 1;
+  background-color: aqua;
 }
 
 .active {
-  opacity: 1;
+  opacity: .8;
+  background-color: aqua;
+
 }
 
 .SelectorContainerPos::-webkit-scrollbar {

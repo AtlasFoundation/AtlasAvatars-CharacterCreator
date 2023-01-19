@@ -16,7 +16,7 @@ import { Canvas } from "@react-three/fiber"
 import { SceneContext } from "../context/SceneContext"
 import { ViewContext, ViewStates } from "../context/ViewContext"
 import { AnimationManager } from "../library/animationManager"
-import logo from "../../public/ui/Atlaslogo.png"
+import logo from "../ui/Atlaslogo.png"
 import CustomButton from "./custom-button"
 import styles from "./Landing.module.css"
 
