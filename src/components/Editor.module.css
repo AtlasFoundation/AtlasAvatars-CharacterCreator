@@ -40,16 +40,17 @@
     border-right: '';
     margin:auto;
     src: '';
-    width:fit-content;
+    width: 3.5em;
 }
 
 .MenuImg:hover {
     opacity: 1;
     background-color: aqua;
+    width: 3.5em;
 }
 
 .MenuOption {
-    margin: .1em;
+    padding: auto;
 }
 
 .MenuOptionSelected {
@@ -64,7 +65,9 @@
     border-right: '';
     margin:auto;
     src: '';
-    background-color: aqua;}
+    background-color: aqua;
+    width: 3.5em;
+}
 
 .MenuImgActive {
     opacity: 1;
@@ -79,24 +82,34 @@
     margin:auto;
     src: '';
     background-color: aqua;
+    width: 3.5em;
 }
 
 .ShuffleOption {
     border-right: '';
     opacity: 1;
-    height: 5em;
-    width: 5em;
-    padding: .1em;
+    height: 3.5em;
+    width: 3.5em;
     display: flex;
     margin-left: auto;
     margin-right: auto;
+}
+
+.ShuffleOption:hover {
+    opacity: 1;
+    background-color: aqua;
+    width:3.5em;
+}
+.ShuffleOptionSelected {
+    opacity: 1;
+    background-color: aqua;
 }
 
 .MenuTitle {
     display: inline-block;
     text-align: center;
     height: 3.5em;
-    width: 5em;
+    width: 3.5em;
     text-align: center;
     margin: 0 auto .25em auto;
     user-select: none;
