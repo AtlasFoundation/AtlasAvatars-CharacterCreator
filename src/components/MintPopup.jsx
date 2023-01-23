@@ -58,7 +58,7 @@ export default function MintPopup() {
       setMintStatus("Uploading...")
       console.log('avatar in mintAsset', avatar)
 
-      const glb = await getModelFromScene(avatar.scene.clone(), "glb", skinColor)
+      const glb = await getModelFromScene(avatar.clone(), "glb", skinColor)
       const glbName = "AvatarGlb_" + Date.now() + ".glb";
       const glbHash = await saveFileToPinata(
         glb,
