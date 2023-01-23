@@ -64,6 +64,8 @@ export default function MintPopup() {
         glb,
         glbName
       )
+
+      setMintStatus("Minting...")
       const wallet = await selector.wallet();
 			const BOATLOAD_OF_GAS = utils.format.parseNearAmount("0.0000000003");
 			const DEPOSITE = utils.format.parseNearAmount("1");
@@ -78,7 +80,7 @@ export default function MintPopup() {
 							params: {
 								methodName: "nft_mint",
 								args: { 
-                  token_id: `${accountId}-Character-Avatar`,
+                  token_id: `${accountId}-Character-Avatar` + Date.now(),
                   token_metadata: {
                     title: "Character Creator on Near Chain",
                     description: "Character Avatar from Character Creator",
