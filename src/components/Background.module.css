@@ -25,17 +25,24 @@
   
   .atlasmark {
     position: absolute;
-    left: 0;
-    top: 0;
-    width: 100vw;
-    height: 100vh;
+    left: 2em;
+    top: 10em;
+    height: 5em;
+    width: auto;
+    opacity: 0;
   }
   
   .logo {
     position: absolute;
+<<<<<<< Updated upstream
     left: 5%;
     top: 2%;
     width: 20em;
     height: 5em;
     opacity: 1;
+=======
+    left: 2em;
+    top: 10em;
+    opacity: 0;
+>>>>>>> Stashed changes
   }

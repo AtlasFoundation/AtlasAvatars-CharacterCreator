@@ -2,25 +2,49 @@
   position: absolute;
   top: 10vh;
   right: 2em;
+<<<<<<< Updated upstream
   height: 80vh;
   overflow-y: scroll;
   overflow-x: none;
+=======
+  height: auto;
+  overflow-y: scroll;
+  overflow-x: none;
+  border: 1px solid #38404E;
+  border-radius : 5px;
+  z-index:1000;
+  cursor: pointer; 
+>>>>>>> Stashed changes
   background: rgba(53, 219, 255, 0.29);
-  border-radius: 16px;
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
   backdrop-filter: blur(4.5px);
   -webkit-backdrop-filter: blur(4.5px);
   border: 1px solid rgba(53, 219, 255, 0.39);
   user-select : none;
   -webkit-user-select : none;
+<<<<<<< Updated upstream
+=======
+  display: flex;
+  flex-direction: column;
+>>>>>>> Stashed changes
 }
 
 .selector-container {
   background: rgba(56, 64, 78, 0.1);
-  border-radius: .25em;
+  border-radius: 5px;
   user-select: none;
+<<<<<<< Updated upstream
 
   flex: 1;
+=======
+  flex: 1;
+  flex-direction: column;
+  display: flex;
+  align-items: center;
+  width: 3.5em;
+  max-height: 90vh;
+  max-width: 5em;
+>>>>>>> Stashed changes
 }
 
 .selector-button {
@@ -29,10 +53,12 @@
 
 .selector-button:hover {
   opacity: 1;
+  background-color: aqua;
 }
 
 .active {
   opacity: 1;
+  background-color: rgba(53, 219, 255, 0.29);
 }
 
 .SelectorContainerPos::-webkit-scrollbar {
@@ -56,6 +82,7 @@
 }
 
 .selectorButton {
+<<<<<<< Updated upstream
   padding: .25em;
   display: block;
   position: relative;
@@ -63,13 +90,24 @@
 
 .trait-icon {
     height: 10em;
+=======
+  display: flex;
+  position: relative;
+}
+
+.trait-icon { 
+    opacity: 1;
+    height: 3.5em;
+    display: flex;
+    flex-direction: column;
+>>>>>>> Stashed changes
     margin: auto;
     user-select: none;
     position: relative;
 }
 
 .tickStyle {
-  width: 20%;
+  width: 3.5em;
   position: absolute;
   right: -15px;
   top: -15px;
@@ -80,16 +118,21 @@
 }
 
 .loading-trait {
-  height: 4em;
-  width: 4em;
+  height: 3.5em;
+  width: 3.5em;
   text-align: center;
+<<<<<<< Updated upstream
   line-height: 52px;
   background-color: rgba(16, 16, 16, 0.6);
+=======
+  line-height: 4em;
+  background-color: rgba(16, 16, 16, 0.3);
+  border-radius: 5px;
+>>>>>>> Stashed changes
   z-index: 999;
   position: absolute;
   display: block;
   color: #efefef;
-  top: 0;
   cursor: wait;
 }
 
@@ -99,11 +142,16 @@
 
 .loading-trait-overlay {
   position: fixed;
+<<<<<<< Updated upstream
   left: 0;
   top: 0;
   width: 100%;
   height: 98%;
   background-color: rgba(16, 16, 16, 0.8);
+=======
+  background-color: rgba(16, 16, 16, 0.3);
+  border-radius: 5px;
+>>>>>>> Stashed changes
   cursor: wait;
 }
 

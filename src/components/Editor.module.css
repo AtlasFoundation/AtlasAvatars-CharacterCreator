@@ -1,4 +1,5 @@
 .SideMenu {
+<<<<<<< Updated upstream
     position: absolute; 
     display: flex;
     flex-direction: column;
@@ -9,13 +10,27 @@
     border-radius : 5px;
     box-sizing : border-box;
     /* From https://css.glass */
+=======
+    position: absolute;
+    top: 10vh;
+    right: 2em;
+    height: 85vh;
+    overflow-y: scroll;
+    overflow-x: none;
+    border: 1px solid #38404E;
+    border-radius : 5px;
+    z-index:1000;
+    cursor: pointer; 
+>>>>>>> Stashed changes
     background: rgba(53, 219, 255, 0.29);
     border-radius: 16px;
     box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-    -webkit-backdrop-filter: blur(4.5px);
     backdrop-filter: blur(4.5px);
+    -webkit-backdrop-filter: blur(4.5px);
     border: 1px solid rgba(53, 219, 255, 0.39);
+    user-select : none;
     -webkit-user-select : none;
+<<<<<<< Updated upstream
     user-select: none;
 }
 
@@ -51,12 +66,32 @@
 }
 
 .MenuOptionSelected {
+=======
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .side-menu-container {
+    height: auto;
+    background: rgba(56, 64, 78, 0.1);
+    border-radius: 5px;
+    user-select: none;
+    flex: 1;
+    flex-direction: column;
+    display: flex;
+    align-items: center;
+    width: 3.5em;
+    max-width: 5em;
+  }
+  
+  .selector-button {
+>>>>>>> Stashed changes
     opacity: 1;
-    width: 100%;
-}
-
-.MenuImgActive {
+  }
+  
+  .selector-button:hover {
     opacity: 1;
+<<<<<<< Updated upstream
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -87,9 +122,94 @@
 .MenuTitle {
     display: inline-block;
     text-align: center;
+=======
+    background-color: aqua;
+  }
+  
+  .active {
+    opacity: 1;
+    background-color: rgba(53, 219, 255, 0.29);
+  }
+  
+  .SelectorContainerPos::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+  }
+  
+  /* Track */
+  .SelectorContainerPos::-webkit-scrollbar-track {
+    background: none;
+  }
+  
+  /* Handle */
+  .SelectorContainerPos::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, .25);
+  }
+  
+  /* Handle on hover */
+  .SelectorContainerPos::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, .5);
+  }
+  
+  .selectorButton {
+    display: flex;
+    position: relative;
+  }
+  
+  .trait-icon { 
+      opacity: 1;
+      height: 3.5em;
+      display: flex;
+      flex-direction: column;
+      margin: auto;
+      user-select: none;
+      position: center;
+      width: auto;
+  }
+  
+  .tickStyle {
+    width: 3.5em;
+    position: absolute;
+    right: -15px;
+    top: -15px;
+  }
+  
+  .tickStyleInActive {
+    display: none;
+  }
+  
+  .loading-trait {
+>>>>>>> Stashed changes
     height: 3.5em;
-    width: 100%;
+    width: 3.5em;
     text-align: center;
+<<<<<<< Updated upstream
     margin: 0 auto .25em auto;
     user-select: none;
 }
+=======
+    line-height: 4em;
+    background-color: rgba(16, 16, 16, 0.3);
+    border-radius: 5px;
+    z-index: 999;
+    position: absolute;
+    display: block;
+    color: #efefef;
+    cursor: wait;
+  }
+  
+  .icon-hidden {
+    visibility: hidden;
+  }
+  
+  .loading-trait-overlay {
+    position: fixed;
+    background-color: rgba(16, 16, 16, 0.3);
+    border-radius: 5px;
+    cursor: wait;
+  }
+  
+  .loading-trait-overlay-show {
+    display: none;
+  }
+>>>>>>> Stashed changes
