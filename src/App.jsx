@@ -1,5 +1,3 @@
-import { Web3Provider } from "@ethersproject/providers"
-import { Web3ReactProvider } from "@web3-react/core"
 import React, { Fragment, useContext, useEffect } from "react"
 import ReactDOM from "react-dom/client"
 import Background from "./components/Background"
@@ -10,8 +8,9 @@ import { UserMenu } from "./components/UserMenu"
 import Scene from "./components/Scene"
 import { ViewProvider, ViewContext, ViewStates } from "./context/ViewContext"
 import { SceneContext, SceneProvider } from "./context/SceneContext"
-import { AccountProvider } from "./context/AccountContext"
+import { WalletSelectorContextProvider } from './context/WalletSelectorContext'
 import MintPopup from "./components/MintPopup"
+import "@near-wallet-selector/modal-ui/styles.css";
 // import Gate from "./components/Gate"
 
 // dynamically import the manifest
@@ -47,15 +46,8 @@ function App() {
   )
 }
 
-const getLibrary = (provider) => {
-  const library = new Web3Provider(provider)
-  library.pollingInterval = 12000
-  return library
-}
-
 function AppContainer(){
   return (
-  <AccountProvider>
   <AudioProvider>
     <ViewProvider>
       <SceneProvider>
@@ -63,12 +55,11 @@ function AppContainer(){
       </SceneProvider>
     </ViewProvider>
   </AudioProvider>
-</AccountProvider>
   )
 }
 
 ReactDOM.createRoot(document.getElementById("root")).render(
-  <Web3ReactProvider getLibrary={getLibrary}>
+  <WalletSelectorContextProvider>
     <AppContainer />
-  </Web3ReactProvider>,
+  </WalletSelectorContextProvider>
 )

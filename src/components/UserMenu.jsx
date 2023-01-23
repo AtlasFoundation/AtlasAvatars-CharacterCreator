@@ -1,16 +1,12 @@
-import { useWeb3React } from "@web3-react/core"
-import { InjectedConnector } from "@web3-react/injected-connector"
 import classnames from "classnames"
-import { ethers } from "ethers"
 import React, { useContext, useEffect, useState } from "react"
 import { GLTFExporter } from "three/examples/jsm/exporters/GLTFExporter"
-import { AccountContext } from "../context/AccountContext"
 import { SceneContext } from "../context/SceneContext"
 import { ViewContext, ViewStates } from "../context/ViewContext"
+import { useWalletSelector } from '../context/WalletSelectorContext'
 import { combine } from "../library/merge-geometry"
 import VRMExporter from "../library/VRMExporter"
 import CustomButton from "./custom-button"
-import { CHAINS } from "./Contract"
 
 import styles from "./UserMenu.module.css"
 
@@ -18,15 +14,10 @@ export const UserMenu = () => {
   const type = "_Gen1" // class type
 
   const [showDownloadOptions, setShowDownloadOptions] = useState(false)
-  const { ensName, setEnsName, connected, setConnected, setWalletAddress } =
-    useContext(AccountContext)
   const { avatar } =
     useContext(SceneContext)
-  const { activate, deactivate, account, chainId } = useWeb3React()
 
-  const injected = new InjectedConnector({
-    supportedChainIds: [137, 1, 3, 4, 5, 42, 97],
-  })
+	const { selector, modal, accountId } = useWalletSelector();
 
   const { skinColor, model } = useContext(SceneContext)
 
@@ -34,55 +25,13 @@ export const UserMenu = () => {
 
   const [mintStatus, setMintStatus] = useState("")
 
-  useEffect(() => {
-    if (account) {
-      _setAddress(account)
-      setConnected(true)
-      setWalletAddress(account)
-    } else {
-      setConnected(false)
-      setWalletAddress(false)
-      setMintStatus("Please connect your wallet.")
-    }
-  }, [account])
-
-  const _setAddress = async (address) => {
-    const { name } = await getAccountDetails(address)
-    setEnsName(name ? name.slice(0, 15) + "..." : "")
-  }
-
-  const getAccountDetails = async (address) => {
-    const provider = ethers.getDefaultProvider("mainnet", {
-      alchemy: import.meta.env.VITE_ALCHEMY_API_KEY,
-    })
-    const check = ethers.utils.getAddress(address)
-
-    try {
-      const name = await provider.lookupAddress(check)
-      if (!name) return {}
-      return { name }
-    } catch (err) {
-      console.warn(err.stack)
-      return {}
-    }
-  }
-
-  const getChainName = () => {
-    const chainIDMap = Object.keys(CHAINS).reduce((acc, key) => {
-      acc[CHAINS[key].chainId] = key;
-      return acc;
-    }, {})
-    const chainName = chainIDMap[chainId];
-    return chainName;
-  }
-
   const disconnectWallet = async () => {
-    try {
-      deactivate()
-      setConnected(false)
-    } catch (ex) {
-      console.log(ex)
-    }
+    const wallet = await selector.wallet();
+
+		wallet.signOut().catch((err) => {
+			console.log("Failed to sign out");
+			console.error(err);
+		});
   }
 
   const handleDownload = () => {
@@ -92,12 +41,7 @@ export const UserMenu = () => {
   }
 
   const connectWallet = async () => {
-    try {
-      await activate(injected)
-      setMintStatus("Your wallet has been connected.")
-    } catch (ex) {
-      console.log(ex)
-    }
+    modal.show()
   }
 
   async function download(
@@ -235,22 +179,14 @@ export const UserMenu = () => {
             </li>
           </React.Fragment>
         )}
-        {connected ? (
+        {accountId ? (
           <React.Fragment>
             <li>
               <div className={styles.loggedInText}>
-                <div className={styles.chainName}>{getChainName()}</div>
-                {connected ? (
+                <div className={styles.chainName}>Testnet</div>
                   <div className={styles.walletAddress}>
-                    {ensName
-                      ? ensName
-                      : account
-                      ? account.slice(0, 5) + "..." + account.slice(37, 50)
-                      : ""}
+                    { accountId.slice(0, 4) + ".." + accountId.slice(-7) }
                   </div>
-                ) : (
-                  ""
-                )}
               </div>
               <CustomButton
                 type="login"
@@ -268,7 +204,7 @@ export const UserMenu = () => {
               <div className={styles.loggedOutText}>
                 Not
                 <br />
-                Logged In
+                Connected
               </div>
               <CustomButton
                 type="login"

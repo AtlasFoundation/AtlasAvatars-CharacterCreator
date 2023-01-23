@@ -4,9 +4,14 @@ import React, { Fragment, useContext, useState } from "react"
 import mintPopupImage from "../../public/ui/mint/mintPopup.png"
 import polygonIcon from "../../public/ui/mint/polygon.png"
 import ethereumIcon from "../../public/ui/mint/ethereum.png"
+import nearIcon from "../../public/ui/mint/near.png"
 import { AccountContext } from "../context/AccountContext"
 import { SceneContext } from "../context/SceneContext"
 import { ViewContext, ViewStates } from "../context/ViewContext"
+import { useWalletSelector } from '../context/WalletSelectorContext'
+import { providers, utils } from "near-api-js";
+
+import { NFT_CONTRACT_ID } from "../services/address";
 import { getModelFromScene, getScreenShot } from "../library/utils"
 import { CharacterContract, EternalProxyContract, webaverseGenesisAddress } from "./Contract"
 import MintModal from "./MintModal"
@@ -16,13 +21,12 @@ import styles from "./MintPopup.module.css"
 const pinataApiKey = import.meta.env.VITE_PINATA_API_KEY
 const pinataSecretApiKey = import.meta.env.VITE_PINATA_API_SECRET
 
-const mintCost = 0.01
+const mintCost = 1
 
 export default function MintPopup() {
   const { template, avatar, skinColor, model, currentTemplate } = useContext(SceneContext)
   const { currentView, setCurrentView } = useContext(ViewContext)
-  const { walletAddress, connected } =
-    useContext(AccountContext)
+  const { selector, accountId } = useWalletSelector();
 
   const [mintStatus, setMintStatus] = useState("")
 
@@ -47,89 +51,51 @@ export default function MintPopup() {
     return resultOfUpload.data
   }
 
-  const getAvatarTraits = () => {
-    let metadataTraits = []
-    Object.keys(avatar).map((trait) => {
-      if (Object.keys(avatar[trait]).length !== 0) {
-        metadataTraits.push({
-          trait_type: trait,
-          value: avatar[trait].name,
-        })
-      }
-    })
-    return metadataTraits
-  }
-
   const mintAsset = async (avatar) => {
-    const pass = await checkOT(walletAddress);
-    if(pass) {
+    // const pass = await checkOT(walletAddress);
+    if(true) {
       setCurrentView(ViewStates.MINT_CONFIRM)
       setMintStatus("Uploading...")
       console.log('avatar in mintAsset', avatar)
 
-      const screenshot = await getScreenShot("mint-scene")
-      if (!screenshot) {
-        throw new Error("Unable to get screenshot")
-      }
-
-      const imageName = "AvatarImage_" + Date.now() + ".png";
-      const imageHash = await saveFileToPinata(
-        screenshot,
-        imageName
-      ).catch((reason) => {
-        console.error(reason)
-        setMintStatus("Couldn't save to pinata")
-      })
       const glb = await getModelFromScene(avatar.scene.clone(), "glb", skinColor)
       const glbName = "AvatarGlb_" + Date.now() + ".glb";
       const glbHash = await saveFileToPinata(
         glb,
         glbName
       )
-      const attributes = getAvatarTraits()
-      const metadata = {
-        name: "Avatars",
-        description: "Creator Studio Avatars.",
-        image: `ipfs://${imageHash.IpfsHash}/${imageName}`,
-        animation_url: `ipfs://${glbHash.IpfsHash}/${glbName}`,
-        attributes,
-      }
-      const str = JSON.stringify(metadata)
-      const metaDataHash = await saveFileToPinata(
-        new Blob([str]),
-        "AvatarMetadata_" + Date.now() + ".json",
-      )
-      const metadataIpfs = metaDataHash.IpfsHash
+      const wallet = await selector.wallet();
+			const BOATLOAD_OF_GAS = utils.format.parseNearAmount("0.0000000003");
+			const DEPOSITE = utils.format.parseNearAmount("1");
 
-      setMintStatus("Minting...")
-      const chainId = 5 // 1: ethereum mainnet, 4: rinkeby 137: polygon mainnet 5: // Goerli testnet
-      if (window.ethereum.networkVersion !== chainId) {
-        try {
-          await window.ethereum.request({
-            method: "wallet_switchEthereumChain",
-            params: [{ chainId: "0x5" }], // 0x4 is rinkeby. Ox1 is ethereum mainnet. 0x89 polygon mainnet  0x5: // Goerli testnet
-          })
-        } catch (err) {
-          // notifymessage("Please check the Ethereum mainnet", "error");
-          setMintStatus("Please check the Polygon mainnet")
-          return false
-        }
-      }
-      const signer = new ethers.providers.Web3Provider(
-        window.ethereum,
-      ).getSigner()
-      const contract = new ethers.Contract(CharacterContract.address, CharacterContract.abi, signer)
-      const tokenPrice = await contract.tokenPrice()
       try {
-        const options = {
-          value: BigNumber.from(tokenPrice).mul(1),
-          from: walletAddress,
-        }
-        const tx = await contract.mintToken(1, metadataIpfs, options)
-        let res = await tx.wait()
-        if (res.transactionHash) {
+        const res = await wallet.signAndSendTransaction({
+					signerId: accountId,
+					receiverId: NFT_CONTRACT_ID,
+					actions: [
+						{
+							type: "FunctionCall",
+							params: {
+								methodName: "nft_mint",
+								args: { 
+                  token_id: `${accountId}-Character-Avatar`,
+                  token_metadata: {
+                    title: "Character Creator on Near Chain",
+                    description: "Character Avatar from Character Creator",
+                    media:
+                      `https://gateway.pinata.cloud/ipfs/${glbHash.IpfsHash}`,
+                  },
+                  receiver_id: accountId,
+                 },
+								gas: BOATLOAD_OF_GAS,
+                deposit: DEPOSITE
+							},
+						},
+					],
+        })
+
+        if(res.status.SuccessValue) {
           setMintStatus("Mint success!")
-          setCurrentView(ViewStates.MINT_COMPLETE)
         }
       } catch (err) {
         setMintStatus("Public Mint failed! Please check your wallet.")
@@ -139,26 +105,26 @@ export default function MintPopup() {
     }
   }
 
-  const checkOT = async (address) => {
-    if(address) {
-      // const address = '0x6e58309CD851A5B124E3A56768a42d12f3B6D104'
-      const chainId = 1 // 1: ethereum mainnet, 4: rinkeby 137: polygon mainnet 5: // Goerli testnet
-      const ethersigner = ethers.getDefaultProvider("mainnet", {
-        alchemy: import.meta.env.VITE_ALCHEMY_API_KEY,
-      })
-      const contract = new ethers.Contract(EternalProxyContract.address, EternalProxyContract.abi, ethersigner);
-      const webaBalance = await contract.beneficiaryBalanceOf(address, webaverseGenesisAddress, 1);
-      console.log("webaBalance", webaBalance)
-      if(parseInt(webaBalance) > 0) return true;
-      else {
-        setMintStatus("Currently in alpha. You need a genesis pass to mint. \n Will be public soon!")
-        return false;
-      }
-    } else {
-      setMintStatus("Please connect your wallet")
-      return false;
-    }
-  }
+  // const checkOT = async (address) => {
+  //   if(address) {
+  //     // const address = '0x6e58309CD851A5B124E3A56768a42d12f3B6D104'
+  //     const chainId = 1 // 1: ethereum mainnet, 4: rinkeby 137: polygon mainnet 5: // Goerli testnet
+  //     const ethersigner = ethers.getDefaultProvider("mainnet", {
+  //       alchemy: import.meta.env.VITE_ALCHEMY_API_KEY,
+  //     })
+  //     const contract = new ethers.Contract(EternalProxyContract.address, EternalProxyContract.abi, ethersigner);
+  //     const webaBalance = await contract.beneficiaryBalanceOf(address, webaverseGenesisAddress, 1);
+  //     console.log("webaBalance", webaBalance)
+  //     if(parseInt(webaBalance) > 0) return true;
+  //     else {
+  //       setMintStatus("Currently in alpha. You need a genesis pass to mint. \n Will be public soon!")
+  //       return false;
+  //     }
+  //   } else {
+  //     setMintStatus("Please connect your wallet")
+  //     return false;
+  //   }
+  // }
 
   const showTrait = (trait) => {
     if (trait.name in avatar) {
@@ -199,7 +165,7 @@ export default function MintPopup() {
                   {"Mint Price: "}
                 </div>
                 <div className={styles["TraitImage"]} />
-                <img src={ethereumIcon} height={"40%"} />
+                <img src={nearIcon} height={"50%"} />
                 <div className={styles["MintCost"]}>
                   &nbsp;{mintCost}
                 </div>
