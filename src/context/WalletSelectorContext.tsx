@@ -1,5 +1,5 @@
 import React, { useCallback, useContext, useEffect, useState } from "react";
-import { map, distinctUntilChanged } from "rxjs";
+import { map, distinctUntilChanged } from "rxjs/operators";
 import { setupWalletSelector } from "@near-wallet-selector/core";
 // import type { WalletSelector, AccountState } from "@near-wallet-selector/core";
 import { setupModal } from "@near-wallet-selector/modal-ui";
