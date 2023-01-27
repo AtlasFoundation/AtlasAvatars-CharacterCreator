@@ -21,11 +21,11 @@ We are constantly working to improve our platform and add new features to make t
 
 ## Features
 
-##### Easy to use 3D avatar creation tool
-##### Minting of custom NFT's on multiple blockchain networks
-##### Built-in marketplace to buy and sell your avatars
-##### Utilizing relevant keywords in metadata for better discoverability
-##### Regular updates and new features
+* Easy to use 3D avatar creation tool
+* Minting of custom NFT's on multiple blockchain networks
+* Built-in marketplace to buy and sell your avatars
+* Utilizing relevant keywords in metadata for better discoverability
+* Regular updates and new features
 
 ### Requirements
 
@@ -33,10 +33,10 @@ A web3 wallet like MetaMask or Trust Wallet to mint NFT's
 
 #### Getting Started
 
-Sign up for an account on our platform
-Create your unique 3D avatar using our customization tools
-Mint your avatar as an NFT on your desired blockchain network
-Share your avatar on the built-in marketplace or on other marketplaces
+1. Sign up for an account on our platform
+2. Create your unique 3D avatar using our customization tools
+3. Mint your avatar as an NFT on your desired blockchain network
+4. Share your avatar on the built-in marketplace or on other marketplaces
 
 ##### Support
 If you have any questions or need help getting started, please reach out to our support team at support@AtlasAvatars.com
