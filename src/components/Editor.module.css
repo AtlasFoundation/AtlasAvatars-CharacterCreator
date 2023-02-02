@@ -94,7 +94,9 @@
     margin-left: auto;
     margin-right: auto;
 }
-
+.ShuffleOption:hover {
+    background-color:aqua;
+}
 .MenuTitle {
     display: inline-block;
     text-align: center;
