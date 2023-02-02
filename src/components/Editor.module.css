@@ -70,6 +70,7 @@
 
 .MenuImgActive {
     opacity: 1;
+    width:5em;
     display: flex;
     flex-direction: column;
     align-items: center;
