@@ -17,7 +17,7 @@
     border: 1px solid rgba(53, 219, 255, 0.39);
     -webkit-user-select : none;
     user-select: none;
-    width:fit-content;
+    width:5em;
 }
 
 .LineDivision {
